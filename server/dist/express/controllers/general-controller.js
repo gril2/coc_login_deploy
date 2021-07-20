@@ -115,14 +115,18 @@ let MyController = class MyController {
                 }
                 return response.status(200).json(responseObject);
             }
-            let account_id_no = resultLogin[0].v_account_gsn;
+            let account_id_no = resultLogin[1].v_account_gsn;
             let new_account = false;
             if (account_id_no === 0) {
                 const countryCode = body.country_code;
                 const replacementsJoin = [platformType, platformId, mailId, countryCode, marketType, date_util_1.getDateString(new Date())];
                 const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?,?,?)`, { replacements: replacementsJoin });
+                if (resultJoin[0].error_code != 0) {
+                    responseObject.error_code = resultJoin[0].errorCode;
+                    return response.status(200).json(responseObject);
+                }
                 const resultReLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin });
-                account_id_no = resultReLogin[0].v_account_gsn;
+                account_id_no = resultReLogin[1].v_account_gsn;
                 new_account = true;
             }
             if (account_id_no === 0) {
