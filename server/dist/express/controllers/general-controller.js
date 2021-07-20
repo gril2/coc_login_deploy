@@ -27,7 +27,6 @@ const block_locale_service_1 = require("../../services/block-locale-service");
 const date_util_1 = require("../../modules/date-util");
 const redisScan = require("node-redis-scan");
 const util_1 = require("util");
-const database_game_1 = require("../../database_game");
 var PlatformType;
 (function (PlatformType) {
     PlatformType[PlatformType["KAKAO"] = 1] = "KAKAO";
@@ -103,7 +102,7 @@ let MyController = class MyController {
                 comebackDay = resultCode[0].ConfigValue;
             }
             const replacementsLogin = [platformType, platformId, uuid, mailId, marketType, comebackDay, date_util_1.getDateString(new Date())];
-            const resultLogin = await database_main_1.sequelize.query(`CALL ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin });
+            const resultLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin });
             if (resultLogin[0].errorCode) {
                 responseObject.error_code = resultLogin[0].errorCode;
                 if (resultLogin[0].block_id && resultLogin[0].block_id > 0) {
@@ -122,7 +121,7 @@ let MyController = class MyController {
                 const countryCode = body.country_code;
                 const replacementsJoin = [platformType, platformId, mailId, countryCode, marketType, date_util_1.getDateString(new Date())];
                 const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?,?,?)`, { replacements: replacementsJoin });
-                const resultReLogin = await database_main_1.sequelize.query(`CALL ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin });
+                const resultReLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin });
                 account_id_no = resultReLogin[0].v_account_gsn;
                 new_account = true;
             }
@@ -131,21 +130,8 @@ let MyController = class MyController {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
-            const replacementsGetInfo = [account_id_no];
-            const resultGetInfo = await database_main_1.sequelize.query(`CALL GET_ACCOUNT_UNIT_INFO (?)`, { replacements: replacementsGetInfo, type: sequelize_1.QueryTypes.SELECT });
             const unitInfo = [];
-            const channelIDs = new Set();
             var totalSlotCount = 0;
-            const sequelize_GameDB = database_game_1.db.getSequelize();
-            for (let i = 0; i < 100; i++) {
-                const unit = resultGetInfo[1][i.toString()];
-                if (unit) {
-                    unitInfo.push(unit);
-                }
-                else {
-                    break;
-                }
-            }
             const newServerList = [];
             const servers = await redisClient.hgetallAsync('NewServerList');
             if (servers) {
