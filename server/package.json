@@ -1,0 +1,45 @@
+{
+  "name": "login-server",
+  "version": "1.0.0",
+  "description": "로그인서버",
+  "main": "app.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run build:live",
+    "build:live": "nodemon --exec ts-node -- ./src/app.ts",
+    "build": "echo \"build starting\" && del-cli dist/**/*.js && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "simula",
+  "license": "ISC",
+  "homepage": "",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "deasync": "^0.1.20",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "mysql2": "^2.2.5",
+    "node-redis-scan": "^1.2.1",
+    "redis": "^3.0.2",
+    "reflect-metadata": "^0.1.13",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "routing-controllers": "^0.9.0",
+    "sequelize": "^6.3.5",
+    "uuid": "^8.3.1",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.0"
+  },
+  "devDependencies": {
+    "class-transformer": "^0.3.1",
+    "class-validator": "^0.12.2",
+    "del-cli": "^3.0.1",
+    "nodemon": "^2.0.5",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3"
+  }
+}

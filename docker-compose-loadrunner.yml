@@ -1,0 +1,37 @@
+version: '3'
+
+services:  
+  nginx-1:
+    container_name: node-login-nginx
+    build: ./nginx
+    # environment:
+    #   - TZ: "Asia/Seoul"
+    links:
+      - app-1:app-1
+      - app-2:app-2      
+    ports:
+      - 13103:27001
+      # - 23001:23001
+    depends_on:
+      - app-1
+      - app-2
+
+  app-1:
+    container_name: login-server-1
+    build: ./server
+    environment:
+      - NODE_ENV=aws_loadrunner
+      # - TZ=Asia/Seoul
+    volumes: 
+      - /var/log/ntrance/login/aws_loadrunner:/log
+      # - /etc/localtime:/etc/localtime:ro
+
+  app-2:
+    container_name: login-server-2
+    build: ./server
+    environment:
+      - NODE_ENV=aws_loadrunner
+      # - TZ=Asia/Seoul
+    volumes: 
+      - /var/log/ntrance/login/aws_loadrunner:/log
+      # - /etc/localtime:/etc/localtime:ro
