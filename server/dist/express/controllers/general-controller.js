@@ -24,6 +24,7 @@ const server_list_service_1 = require("../../services/server-list-service");
 const redis_service_1 = require("../../services/redis-service");
 const auth_middleware_1 = require("../middlewares/auth-middleware");
 const block_locale_service_1 = require("../../services/block-locale-service");
+const date_util_1 = require("../../modules/date-util");
 const redisScan = require("node-redis-scan");
 const util_1 = require("util");
 const database_game_1 = require("../../database_game");
@@ -95,13 +96,14 @@ let MyController = class MyController {
             const platformId = body.device_id;
             const uuid = uuid_1.v4();
             let mailId = body.email ? body.email : '';
+            const marketType = body.market_type;
             let comebackDay = 28;
             const resultCode = await database_code_1.sequelize.query(`SELECT * FROM __t_Config WHERE tid=1005`, { type: sequelize_1.QueryTypes.SELECT });
             if (resultCode.length > 0) {
                 comebackDay = resultCode[0].ConfigValue;
             }
-            const replacementsLogin = [platformType, platformId, uuid, mailId, comebackDay];
-            const resultLogin = await database_main_1.sequelize.query(`CALL ACCOUNT_LOGIN (?,?,?,?,?)`, { replacements: replacementsLogin });
+            const replacementsLogin = [platformType, platformId, uuid, mailId, marketType, comebackDay, date_util_1.getDateString(new Date())];
+            const resultLogin = await database_main_1.sequelize.query(`CALL ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin });
             if (resultLogin[0].errorCode) {
                 responseObject.error_code = resultLogin[0].errorCode;
                 if (resultLogin[0].block_id && resultLogin[0].block_id > 0) {
@@ -117,9 +119,10 @@ let MyController = class MyController {
             let account_id_no = resultLogin[0].v_account_gsn;
             let new_account = false;
             if (account_id_no === 0) {
-                const replacementsJoin = [platformType, platformId, mailId];
-                const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?)`, { replacements: replacementsJoin });
-                const resultReLogin = await database_main_1.sequelize.query(`CALL ACCOUNT_LOGIN (?,?,?,?,?)`, { replacements: replacementsLogin });
+                const countryCode = body.country_code;
+                const replacementsJoin = [platformType, platformId, mailId, countryCode, marketType, date_util_1.getDateString(new Date())];
+                const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?,?,?)`, { replacements: replacementsJoin });
+                const resultReLogin = await database_main_1.sequelize.query(`CALL ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin });
                 account_id_no = resultReLogin[0].v_account_gsn;
                 new_account = true;
             }
