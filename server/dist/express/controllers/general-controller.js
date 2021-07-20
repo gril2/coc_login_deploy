@@ -18,14 +18,12 @@ const sequelize_1 = require("sequelize");
 const error_code_1 = require("../../error-code");
 const logger_1 = require("../../logger");
 const database_main_1 = require("../../database_main");
-const database_optool_1 = require("../../database_optool");
 const database_code_1 = require("../../database_code");
 const uuid_1 = require("uuid");
 const server_list_service_1 = require("../../services/server-list-service");
 const redis_service_1 = require("../../services/redis-service");
 const auth_middleware_1 = require("../middlewares/auth-middleware");
 const block_locale_service_1 = require("../../services/block-locale-service");
-const date_util_1 = require("../../modules/date-util");
 const redisScan = require("node-redis-scan");
 const util_1 = require("util");
 const database_game_1 = require("../../database_game");
@@ -448,19 +446,7 @@ let MyController = class MyController {
         return (resultCert[0].v_ExistsCheck > 0);
     }
     async checkServerMaintenance() {
-        try {
-            const dateString = date_util_1.getDateString(new Date());
-            const query = `SELECT * FROM check_popup WHERE del_yn='N' AND start_date <= '${dateString}' AND end_date > '${dateString}'`;
-            const datas = await database_optool_1.sequelize.query(query, { type: sequelize_1.QueryTypes.SELECT });
-            for (const data of datas) {
-                return data;
-            }
-            return 1;
-        }
-        catch (error) {
-            logger_1.logger.error('[checkServerMaintenance] ' + error.message);
-            return 0;
-        }
+        return 1;
     }
     checkWhiteList(req) {
         let accept = false;
