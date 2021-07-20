@@ -2,11 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.databaseConfigLoadRunnerOptool = exports.databaseConfigOptool = exports.databaseConfigBotMain = exports.databaseConfigCode = exports.databaseConfigLoadRunnerCode = exports.databaseConfigLoadRunnerMain = exports.databaseConfigQACode = exports.databaseConfigQAMain = exports.databaseConfigProd = exports.databaseConfigDev = void 0;
 exports.databaseConfigDev = {
-    username: "dk_game_server",
-    password: "Ntrance!@#123",
-    database: "dk_main",
-    host: "192.168.0.49",
-    port: 3306,
     dialect: "mysql",
     ssl: null,
     maxpool: 5,
@@ -17,11 +12,6 @@ exports.databaseConfigDev = {
     timezone: "+00:00",
 };
 exports.databaseConfigProd = {
-    username: "dk_game_server",
-    password: "Ntrance!@#123",
-    database: "dk_main",
-    host: "192.168.0.49",
-    port: 3306,
     dialect: "mysql",
     ssl: null,
     maxpool: 5,
@@ -32,11 +22,6 @@ exports.databaseConfigProd = {
     timezone: "+00:00",
 };
 exports.databaseConfigQAMain = {
-    username: "dk_game_server",
-    password: "Ntrance@1234!#",
-    database: "dk_main",
-    host: "qa-dk-main-instance-1.ckahrscpvgrn.ap-northeast-2.rds.amazonaws.com",
-    port: 3306,
     dialect: "mysql",
     ssl: null,
     maxpool: 10,
@@ -47,11 +32,6 @@ exports.databaseConfigQAMain = {
     timezone: "+00:00",
 };
 exports.databaseConfigQACode = {
-    username: "dk_game_server",
-    password: "Ntrance@1234!#",
-    database: "dk_code",
-    host: "172.63.0.54",
-    port: 3306,
     dialect: "mysql",
     ssl: null,
     maxpool: 3,
@@ -62,11 +42,6 @@ exports.databaseConfigQACode = {
     timezone: "+00:00",
 };
 exports.databaseConfigLoadRunnerMain = {
-    username: "dk_game_server",
-    password: "Ntrance@1234!#",
-    database: "dk_main",
-    host: "stress-dk-main.ckahrscpvgrn.ap-northeast-2.rds.amazonaws.com",
-    port: 3306,
     dialect: "mysql",
     ssl: null,
     maxpool: 10,
@@ -77,11 +52,6 @@ exports.databaseConfigLoadRunnerMain = {
     timezone: "+00:00",
 };
 exports.databaseConfigLoadRunnerCode = {
-    username: "dk_game_server",
-    password: "Ntrance@1234!#",
-    database: "dk_code",
-    host: "172.32.3.6",
-    port: 3306,
     dialect: "mysql",
     ssl: null,
     maxpool: 2,
@@ -92,11 +62,6 @@ exports.databaseConfigLoadRunnerCode = {
     timezone: "+00:00",
 };
 exports.databaseConfigCode = {
-    username: "dk_game_server",
-    password: "DK!Ntrance@1552!@#",
-    database: "dk_code",
-    host: "172.63.35.203",
-    port: 3306,
     dialect: "mysql",
     ssl: null,
     maxpool: 2,
@@ -107,11 +72,6 @@ exports.databaseConfigCode = {
     timezone: "+00:00",
 };
 exports.databaseConfigBotMain = {
-    username: "dk_game_server",
-    password: "Ntrance@1234!#",
-    database: "dk_code",
-    host: "192.168.0.205",
-    port: 3306,
     dialect: "mysql",
     ssl: null,
     maxpool: 5,
@@ -122,11 +82,6 @@ exports.databaseConfigBotMain = {
     timezone: "+00:00",
 };
 exports.databaseConfigOptool = {
-    username: "dk_tool",
-    password: "Nt@rance!0725$%!",
-    database: "tool_db",
-    host: "3.34.225.142",
-    port: 13306,
     dialect: "mysql",
     ssl: null,
     maxpool: 3,
@@ -137,11 +92,6 @@ exports.databaseConfigOptool = {
     timezone: "+00:00",
 };
 exports.databaseConfigLoadRunnerOptool = {
-    username: "dk_tool",
-    password: "Nt@rance!0725$%!",
-    database: "tool_db",
-    host: "172.32.0.156",
-    port: 13306,
     dialect: "mysql",
     ssl: null,
     maxpool: 10,

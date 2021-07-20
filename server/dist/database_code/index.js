@@ -3,36 +3,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sequelize = exports.models = exports.db = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../config/config");
-const database_config_1 = require("../config/database-config");
 const logger_1 = require("../logger");
+const db_info_service_1 = require("../services/db-info-service");
 class Database {
     constructor() {
-        if (process.env.NODE_ENV == 'aws_qa') {
-            this.dbConfig = config_1.databaseCodeConfig;
-        }
-        else if (process.env.NODE_ENV == 'aws_loadrunner') {
-            this.dbConfig = database_config_1.databaseConfigLoadRunnerCode;
-        }
-        else if (process.env.NODE_ENV == 'production') {
-            this.dbConfig = database_config_1.databaseConfigCode;
-        }
-        else {
-            if (process.env.NODE_ENV == 'bot') {
-                this.dbConfig = database_config_1.databaseConfigBotMain;
-                this.dbConfig.database = 'dk_code';
-            }
-            else {
-                this.dbConfig = config_1.databaseConfig;
-                this.dbConfig.database = 'dk_code';
-            }
+        const dbInfo = db_info_service_1.dbInfoService.getDBInfo(db_info_service_1.DBType.CODE_DB);
+        if (!dbInfo) {
+            logger_1.logger.error("[DB] Error! No DBINFO");
+            process.exit(1);
+            return;
         }
         let success = false;
-        let db = this.dbConnection(this.dbConfig);
+        const dbConfig = {
+            database: dbInfo.database,
+            username: dbInfo.account.id,
+            password: dbInfo.account.passwd,
+            host: dbInfo.host,
+            port: dbInfo.port,
+            dialect: config_1.databaseConfig.dialect,
+            ssl: null,
+            maxpool: config_1.databaseConfig.maxpool,
+            minpool: config_1.databaseConfig.minpool,
+            idlepool: config_1.databaseConfig.idlepool,
+            logging: config_1.databaseConfig.logging,
+            force: false,
+            timezone: config_1.databaseConfig.timezone,
+        };
+        let db = this.dbConnection(dbConfig);
         db.authenticate().then(() => {
             success = true;
             this.sequelize = db;
         }).catch((error) => {
-            console.log(this.dbConfig);
+            console.log(dbConfig);
             success = true;
             logger_1.logger.error("[DB] Error! ", error);
             process.exit(1);

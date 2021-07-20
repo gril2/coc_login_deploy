@@ -37,7 +37,7 @@ class Database {
             }).catch((error) => {
                 success = true;
                 logger_1.logger.error("[DB] Error! ", error);
-                logger_1.logger.error(this.dbConfig);
+                logger_1.logger.error(dbConfig);
             });
             require('deasync').loopWhile(() => {
                 return !(success === true);

@@ -14,6 +14,7 @@ var DBType;
     DBType[DBType["LOG_DB"] = 5] = "LOG_DB";
     DBType[DBType["CASTLE_DB"] = 6] = "CASTLE_DB";
     DBType[DBType["TOOL_DB"] = 7] = "TOOL_DB";
+    DBType[DBType["CODE_DB"] = 8] = "CODE_DB";
 })(DBType = exports.DBType || (exports.DBType = {}));
 class DBInfoService {
     constructor() {
