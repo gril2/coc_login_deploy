@@ -121,7 +121,7 @@ let MyController = class MyController {
                 const countryCode = body.country_code;
                 const replacementsJoin = [platformType, platformId, mailId, countryCode, marketType, date_util_1.getDateString(new Date())];
                 const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?,?,?)`, { replacements: replacementsJoin, type: sequelize_1.QueryTypes.SELECT });
-                if (resultJoin[0][0].error_code != 0) {
+                if (resultJoin[0][0].errorCode != 0) {
                     responseObject.error_code = resultJoin[0][0].errorCode;
                     return response.status(200).json(responseObject);
                 }
@@ -134,8 +134,24 @@ let MyController = class MyController {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
+            const replacementsGetInfo = [account_id_no];
+            const resultGetInfo = await database_main_1.sequelize.query(`CALL GET_ACCOUNT_UNIT_INFO (?)`, { replacements: replacementsGetInfo, type: sequelize_1.QueryTypes.SELECT });
+            if (resultGetInfo[0][0].errorCode != 0) {
+                responseObject.error_code = resultGetInfo[0][0].errorCode;
+                return response.status(200).json(responseObject);
+            }
             const unitInfo = [];
-            var totalSlotCount = 0;
+            let totalSlotCount = 0;
+            const maxUnitCount = Object.keys(resultGetInfo[2]).length;
+            for (let i = 0; i < maxUnitCount; i++) {
+                const unit = resultGetInfo[2][i.toString()];
+                if (unit) {
+                    unitInfo.push(unit);
+                }
+                else {
+                    break;
+                }
+            }
             const newServerList = [];
             const servers = await redisClient.hgetallAsync('NewServerList');
             if (servers) {
