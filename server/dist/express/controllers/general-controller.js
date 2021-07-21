@@ -102,31 +102,31 @@ let MyController = class MyController {
                 comebackDay = resultCode[0].ConfigValue;
             }
             const replacementsLogin = [platformType, platformId, uuid, mailId, marketType, comebackDay, date_util_1.getDateString(new Date())];
-            const resultLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin });
-            if (resultLogin[0].errorCode) {
-                responseObject.error_code = resultLogin[0].errorCode;
-                if (resultLogin[0].block_id && resultLogin[0].block_id > 0) {
+            const resultLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
+            if (resultLogin[0][0].errorCode) {
+                responseObject.error_code = resultLogin[0][0].errorCode;
+                if (resultLogin[0][0].block_id && resultLogin[0][0].block_id > 0) {
                     responseObject.result = {
                         platform_id: platformId,
-                        block_id: resultLogin[0].block_id,
+                        block_id: resultLogin[0][0].block_id,
                         block_expire_dt: resultLogin[0].block_expire_dt,
-                        locale_id: block_locale_service_1.blockLocaleService.getLocaleId(resultLogin[0].block_id)
+                        locale_id: block_locale_service_1.blockLocaleService.getLocaleId(resultLogin[0][0].block_id)
                     };
                 }
                 return response.status(200).json(responseObject);
             }
-            let account_id_no = resultLogin[1].v_account_gsn;
+            let account_id_no = resultLogin[1][0].v_account_gsn;
             let new_account = false;
             if (account_id_no === 0) {
                 const countryCode = body.country_code;
                 const replacementsJoin = [platformType, platformId, mailId, countryCode, marketType, date_util_1.getDateString(new Date())];
-                const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?,?,?)`, { replacements: replacementsJoin });
-                if (resultJoin[0].error_code != 0) {
-                    responseObject.error_code = resultJoin[0].errorCode;
+                const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?,?,?)`, { replacements: replacementsJoin, type: sequelize_1.QueryTypes.SELECT });
+                if (resultJoin[0][0].error_code != 0) {
+                    responseObject.error_code = resultJoin[0][0].errorCode;
                     return response.status(200).json(responseObject);
                 }
-                const resultReLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin });
-                account_id_no = resultReLogin[1].v_account_gsn;
+                const resultReLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
+                account_id_no = resultReLogin[1][0].v_account_gsn;
                 new_account = true;
             }
             if (account_id_no === 0) {
