@@ -48,8 +48,8 @@ let MyController = class MyController {
     async postLogin(body, req, response) {
         const responseObject = getResponseObject();
         try {
-            if (!checkProperty(body, ['device_id', 'platform_type'])) {
-                logger_1.logger.error(`ERROR.NO_BODY_ELEMENT : device_id`);
+            if (!checkProperty(body, ['platform_id', 'platform_type', 'email', 'market_type', 'country_code'])) {
+                logger_1.logger.error(`ERROR.NO_BODY_ELEMENT : platform_id`);
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
@@ -92,9 +92,9 @@ let MyController = class MyController {
                 return response.status(200).json(responseObject);
             }
             const platformType = body.platform_type;
-            const platformId = body.device_id;
+            const platformId = body.platform_id;
             const uuid = uuid_1.v4();
-            let mailId = body.email ? body.email : '';
+            const mailId = body.email;
             const marketType = body.market_type;
             let comebackDay = 28;
             const resultCode = await database_code_1.sequelize.query(`SELECT * FROM __t_Config WHERE tid=1005`, { type: sequelize_1.QueryTypes.SELECT });
@@ -141,7 +141,6 @@ let MyController = class MyController {
                 return response.status(200).json(responseObject);
             }
             const unitInfo = [];
-            let totalSlotCount = 0;
             const maxUnitCount = Object.keys(resultGetInfo[2]).length;
             for (let i = 0; i < maxUnitCount; i++) {
                 const unit = resultGetInfo[2][i.toString()];
@@ -169,8 +168,7 @@ let MyController = class MyController {
                 account_unit_list: unitInfo,
                 server_list: server_list_service_1.serverListService.getServerList(),
                 new_account: new_account,
-                new_server_list: newServerList,
-                buy_unit_slot_cout: totalSlotCount,
+                new_server_list: newServerList
             };
             const client = redis_service_1.redisService.getClient(redis_service_1.RedisType.TRADE1_INFO);
             client.getRedis().publish('t-user-login', JSON.stringify({
