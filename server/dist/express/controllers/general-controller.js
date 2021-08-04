@@ -42,10 +42,11 @@ var PlatformType;
 const ip_list = [
     '106.244.26.98',
 ];
+const certKeyLength = 36;
 let MyController = class MyController {
     constructor() {
     }
-    async postLogin(body, req, response) {
+    async LoginAccountController(body, req, response) {
         const responseObject = getResponseObject();
         try {
             if (!checkProperty(body, ['platform_id', 'platform_type', 'email', 'market_type', 'country_code'])) {
@@ -66,41 +67,20 @@ let MyController = class MyController {
             const checkIp = await redisClient.get('EnableWhiteList');
             const enableWhiteList = checkIp === '1';
             const passWhiteList = this.checkWhiteList(req);
-            const checkServerMaintenance = await this.checkServerMaintenance();
-            if (typeof checkServerMaintenance === 'object') {
-                if (passWhiteList === false) {
-                    responseObject.error_code = error_code_1.ERROR.SERVER_MAINTENANCE;
-                    responseObject.result = {
-                        maintenance_info: {
-                            subject: checkServerMaintenance.title,
-                            contents: checkServerMaintenance.content,
-                            start_date: checkServerMaintenance.start_date,
-                            end_date: checkServerMaintenance.end_date,
-                        }
-                    };
-                    return response.status(200).json(responseObject);
-                }
-            }
-            else {
-                if (checkServerMaintenance === 0) {
-                    responseObject.error_code = error_code_1.ERROR.DB_ERROR;
-                    return response.status(500).json(responseObject);
-                }
-            }
             if (enableWhiteList && passWhiteList === false) {
                 responseObject.error_code = error_code_1.ERROR.WHITE_LIST_ERROR;
                 return response.status(200).json(responseObject);
             }
-            const platformType = body.platform_type;
-            const platformId = body.platform_id;
-            const uuid = uuid_1.v4();
-            const mailId = body.email;
-            const marketType = body.market_type;
             let comebackDay = 28;
             const resultCode = await database_code_1.sequelize.query(`SELECT * FROM __t_Config WHERE tid=1005`, { type: sequelize_1.QueryTypes.SELECT });
             if (resultCode.length > 0) {
                 comebackDay = resultCode[0].ConfigValue;
             }
+            const platformType = body.platform_type;
+            const platformId = body.platform_id;
+            const mailId = body.email;
+            const marketType = body.market_type;
+            const uuid = uuid_1.v4();
             const replacementsLogin = [platformType, platformId, uuid, mailId, marketType, comebackDay, date_util_1.getDateString(new Date())];
             const resultLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
             if (resultLogin[0][0].errorCode) {
@@ -115,9 +95,9 @@ let MyController = class MyController {
                 }
                 return response.status(200).json(responseObject);
             }
-            let account_id_no = resultLogin[1][0].v_account_gsn;
-            let new_account = false;
-            if (account_id_no === 0) {
+            let auid = resultLogin[1][0].v_account_gsn;
+            let isNewAccount = false;
+            if (auid === 0) {
                 const countryCode = body.country_code;
                 const replacementsJoin = [platformType, platformId, mailId, countryCode, marketType, date_util_1.getDateString(new Date())];
                 const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?,?,?)`, { replacements: replacementsJoin, type: sequelize_1.QueryTypes.SELECT });
@@ -126,26 +106,30 @@ let MyController = class MyController {
                     return response.status(200).json(responseObject);
                 }
                 const resultReLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
-                account_id_no = resultReLogin[1][0].v_account_gsn;
-                new_account = true;
+                if (resultReLogin[0][0].errorCode != 0) {
+                    responseObject.error_code = resultReLogin[0][0].errorCode;
+                    return response.status(200).json(responseObject);
+                }
+                auid = resultReLogin[1][0].v_account_gsn;
+                if (auid === 0) {
+                    logger_1.logger.error(`ERROR.NO_BODY_ELEMENT : v_account_gsn is 0`);
+                    responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
+                    return response.status(200).json(responseObject);
+                }
+                isNewAccount = true;
             }
-            if (account_id_no === 0) {
-                logger_1.logger.error(`ERROR.NO_BODY_ELEMENT : account_id_no is 0`);
-                responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
-                return response.status(200).json(responseObject);
-            }
-            const replacementsGetInfo = [account_id_no];
+            const replacementsGetInfo = [auid];
             const resultGetInfo = await database_main_1.sequelize.query(`CALL GET_ACCOUNT_UNIT_INFO (?)`, { replacements: replacementsGetInfo, type: sequelize_1.QueryTypes.SELECT });
             if (resultGetInfo[0][0].errorCode != 0) {
                 responseObject.error_code = resultGetInfo[0][0].errorCode;
                 return response.status(200).json(responseObject);
             }
-            const unitInfo = [];
+            const charInfos = [];
             const maxUnitCount = Object.keys(resultGetInfo[2]).length;
             for (let i = 0; i < maxUnitCount; i++) {
                 const unit = resultGetInfo[2][i.toString()];
                 if (unit) {
-                    unitInfo.push(unit);
+                    charInfos.push(unit);
                 }
                 else {
                     break;
@@ -163,17 +147,16 @@ let MyController = class MyController {
             responseObject.result = {
                 platform_type: platformType,
                 platform_id: platformId,
-                account_gsn: account_id_no,
-                certification_key: uuid,
-                account_unit_list: unitInfo,
-                server_list: server_list_service_1.serverListService.getServerList(),
-                new_account: new_account,
+                auid: auid,
+                cert_key: uuid,
+                account_char_list: charInfos,
+                server_list: server_list_service_1.serverListService.GetPublicServerList(),
+                is_new_account: isNewAccount,
                 new_server_list: newServerList
             };
             const client = redis_service_1.redisService.getClient(redis_service_1.RedisType.TRADE1_INFO);
-            client.getRedis().publish('t-user-login', JSON.stringify({
-                channel: 0,
-                gsn: account_id_no
+            client.getRedis().publish('notify_login', JSON.stringify({
+                auid: auid
             }));
             return response.status(200).json(responseObject);
         }
@@ -190,7 +173,7 @@ let MyController = class MyController {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
-            if (body.account_gsn <= 0 || body.certification_key.length !== 36) {
+            if (body.account_gsn <= 0 || body.certification_key.length !== certKeyLength) {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
@@ -201,7 +184,7 @@ let MyController = class MyController {
                 return response.status(200).json(responseObject);
             }
             responseObject.result = {
-                server_list: server_list_service_1.serverListService.getServerList()
+                server_list: server_list_service_1.serverListService.GetPublicServerList()
             };
             return response.status(200).json(responseObject);
         }
@@ -211,21 +194,7 @@ let MyController = class MyController {
             return response.status(500).json(responseObject);
         }
     }
-    async postServerListAll(response) {
-        const responseObject = getResponseObject();
-        try {
-            responseObject.result = {
-                server_list: server_list_service_1.serverListService.getServerListAll()
-            };
-            return response.status(200).json(responseObject);
-        }
-        catch (error) {
-            logger_1.logger.error('[serverlist/all] ' + error.message);
-            responseObject.error_code = error_code_1.ERROR.DB_ERROR;
-            return response.status(500).json(responseObject);
-        }
-    }
-    async postLoginGame(body, req, response) {
+    async LoginGameserverController(body, req, response) {
         const responseObject = getResponseObject();
         try {
             const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.GAME_INFO);
@@ -252,62 +221,43 @@ let MyController = class MyController {
                     passUser = true;
                 }
             }
-            const checkServerMaintenance = await this.checkServerMaintenance();
-            if (typeof checkServerMaintenance == 'object') {
-                if (passUser === false) {
-                    responseObject.error_code = error_code_1.ERROR.SERVER_MAINTENANCE;
-                    responseObject.result = {
-                        subject: checkServerMaintenance.title,
-                        contents: checkServerMaintenance.content,
-                        start_date: checkServerMaintenance.start_date,
-                        end_date: checkServerMaintenance.end_date
-                    };
-                    return response.status(200).json(responseObject);
-                }
-            }
-            else {
-                if (checkServerMaintenance === 0) {
-                    responseObject.error_code = error_code_1.ERROR.DB_ERROR;
-                    return response.status(500).json(responseObject);
-                }
-            }
             if (passUser === false) {
                 responseObject.error_code = error_code_1.ERROR.WHITE_LIST_ERROR;
                 return response.status(200).json(responseObject);
             }
-            if (!checkProperty(body, ['channel_id', 'server_type', 'account_gsn', 'certification_key'])) {
+            if (!checkProperty(body, ['server_id', 'auid', 'cert_key'])) {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
-            if (body.channel_id <= 0 || body.account_gsn <= 0 || body.certification_key.length !== 36) {
+            const serverId = body.server_id;
+            const auid = body.auid;
+            const certKey = body.cert_key;
+            if (serverId <= 0 || auid <= 0 || certKey.length !== certKeyLength) {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
-            const channelId = body.channel_id;
-            const accountGSN = body.account_gsn;
-            const certKey = body.certification_key;
-            if (await this.checkCert(accountGSN, certKey) === false) {
+            if (await this.checkCert(auid, certKey) === false) {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
-            const serverList = server_list_service_1.serverListService.getServerListWithType(channelId, body.server_type);
-            if (serverList.length === 0) {
+            const server = server_list_service_1.serverListService.GetServerEndpoint(serverId);
+            if (server === null) {
                 responseObject.error_code = error_code_1.ERROR.ERROR_3499;
                 return response.status(200).json(responseObject);
             }
             let waitCount = -1;
-            if (await redis_service_1.redisService.existKeyInGameAccept(channelId, accountGSN) > 0) {
-                if (redis_service_1.redisService.addToGameAccept(channelId, accountGSN)) {
-                    if (redis_service_1.redisService.addExpireTimeToGameAccept(channelId, accountGSN)) {
+            if (await redis_service_1.redisService.existKeyInGameAccept(serverId, auid) > 0) {
+                if (redis_service_1.redisService.addToGameAccept(serverId, auid)) {
+                    if (redis_service_1.redisService.addExpireTimeToGameAccept(serverId, auid)) {
                         waitCount = 0;
                     }
                 }
             }
             else {
-                if (redis_service_1.redisService.addToLoginWait(channelId, accountGSN)) {
-                    if (redis_service_1.redisService.addExpireTimeToLoginWait(channelId, accountGSN)) {
-                        if (await redis_service_1.redisService.addToLoginWaitList(channelId, accountGSN)) {
-                            waitCount = await redis_service_1.redisService.getLoginWaitListRank(channelId, accountGSN);
+                if (redis_service_1.redisService.addToLoginWait(serverId, auid)) {
+                    if (redis_service_1.redisService.addExpireTimeToLoginWait(serverId, auid)) {
+                        if (await redis_service_1.redisService.addToLoginWaitList(serverId, auid)) {
+                            waitCount = await redis_service_1.redisService.getLoginWaitListRank(serverId, auid);
                             if (waitCount === 0) {
                                 waitCount = 1;
                             }
@@ -317,22 +267,21 @@ let MyController = class MyController {
             }
             if (waitCount === 1) {
                 const client = redis_service_1.redisService.getClient(redis_service_1.RedisType.TRADE1_INFO);
-                client.getRedis().publish('t-user-login', JSON.stringify({
-                    channel: channelId,
-                    gsn: accountGSN
+                client.getRedis().publish('notify_login', JSON.stringify({
+                    auid: auid
                 }));
             }
-            let hostName = serverList[0].external_host_name;
+            let hostName = server.host;
             let ip = req.headers['x-real-ip'] || req.connection.remoteAddress;
             const includes = ip.includes('127.0.0.1') || ip.includes('192.168.0.');
             const env = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'aws_qa' && process.env.NODE_ENV !== 'bot';
-            if (channelId === 1 && includes && env) {
-                hostName = '192.168.0.216';
+            if (serverId === 1 && includes && env) {
+                hostName = '192.168.0.79';
             }
             responseObject.result = {
-                channel_id: channelId,
-                external_host_name: hostName,
-                external_port: serverList[0].external_port_list[0],
+                server_id: serverId,
+                host: hostName,
+                port: server.port,
                 wait_number: waitCount
             };
             return response.status(200).json(responseObject);
@@ -354,7 +303,7 @@ let MyController = class MyController {
             responseObject.result = {
                 recommended_server_list: [],
                 new_server_list: [],
-                server_list: server_list_service_1.serverListService.getServerList(),
+                server_list: server_list_service_1.serverListService.GetPublicServerList(),
                 wait_count_list: []
             };
             let servers = await redisClient.hgetallAsync('RecommendedServerList');
@@ -467,12 +416,12 @@ let MyController = class MyController {
     }
 };
 __decorate([
-    routing_controllers_1.Post('/login'),
+    routing_controllers_1.Post('/login/account'),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Req()), __param(2, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
-], MyController.prototype, "postLogin", null);
+], MyController.prototype, "LoginAccountController", null);
 __decorate([
     routing_controllers_1.Post('/serverlist'),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Res()),
@@ -481,19 +430,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "postServerList", null);
 __decorate([
-    routing_controllers_1.Get('/serverlist'),
-    __param(0, routing_controllers_1.Res()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], MyController.prototype, "postServerListAll", null);
-__decorate([
-    routing_controllers_1.Post('/game/login'),
+    routing_controllers_1.Post('/login/gameserver'),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Req()), __param(2, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
-], MyController.prototype, "postLoginGame", null);
+], MyController.prototype, "LoginGameserverController", null);
 __decorate([
     routing_controllers_1.Get('/recommend'),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Req()), __param(2, routing_controllers_1.Res()),

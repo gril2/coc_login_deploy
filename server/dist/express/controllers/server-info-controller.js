@@ -33,7 +33,7 @@ let MyController = class MyController {
         const responseObject = getResponseObject();
         try {
             const serverInfo = body.server_info;
-            server_list_service_1.serverListService.setServer(serverInfo);
+            server_list_service_1.serverListService.SetServer(serverInfo);
             const client = redis_service_1.redisService.getClient(redis_service_1.RedisType.INNER_PUBLISHER);
             if (client) {
                 client.getRedis().publish('server_info_inner', JSON.stringify({

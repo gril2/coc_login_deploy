@@ -254,12 +254,12 @@ class RedisClient {
             if (channel === 'server_info_inner') {
                 const serverInfoInner = JSON.parse(message);
                 if (serverInfoInner.uuid !== exports.ServerUUID) {
-                    server_list_service_1.serverListService.setServer(serverInfoInner.server_info);
+                    server_list_service_1.serverListService.SetServer(serverInfoInner.server_info);
                 }
             }
             else {
                 const serverInfo = JSON.parse(message);
-                server_list_service_1.serverListService.setServer(serverInfo);
+                server_list_service_1.serverListService.SetServer(serverInfo);
             }
         }
         catch (error) {
