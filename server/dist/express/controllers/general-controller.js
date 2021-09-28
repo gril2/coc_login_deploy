@@ -398,8 +398,11 @@ let MyController = class MyController {
     }
     async checkCert(gsn, cert) {
         const replacementsCert = [gsn, cert];
-        const resultCert = await database_main_1.sequelize.query(`CALL CHECK_CERTIFICATION_KEY (?,?)`, { replacements: replacementsCert });
-        return (resultCert[0].v_ExistsCheck > 0);
+        const resultCert = await database_main_1.sequelize.query(`CALL CHECK_CERTIFICATION_KEY (?,?)`, { replacements: replacementsCert, type: sequelize_1.QueryTypes.SELECT });
+        if (resultCert[0][0].errorCode) {
+            return false;
+        }
+        return (resultCert[1][0].v_ExistsCheck > 0);
     }
     async checkServerMaintenance() {
         return 1;
