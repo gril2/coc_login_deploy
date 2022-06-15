@@ -28,7 +28,7 @@ class ServerListService {
         const curDate = new Date();
         const retServerList = [];
         for (const [key, serverInfo] of this.serverList.entries()) {
-            if (serverInfo.server_flavor != "coc_frontend") {
+            if (serverInfo.server_flavor != "coc_frontend" && serverInfo.server_flavor != "coc_development") {
                 continue;
             }
             serverInfo.outDate = (curDate.getTime() - serverInfo.updateDate.getTime()) > 1500 ? true : false;
@@ -36,6 +36,8 @@ class ServerListService {
                 retServerList.push({
                     host: serverInfo.host,
                     port: serverInfo.port,
+                    server_flavor: serverInfo.server_flavor,
+                    serverId: serverInfo.serverId
                 });
             }
         }
