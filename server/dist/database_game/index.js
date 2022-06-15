@@ -11,7 +11,7 @@ class Database {
         const dbInfo = db_info_service_1.dbInfoService.getDBInfo(db_info_service_1.DBType.GAME_DB);
         if (!dbInfo) {
             logger_1.logger.error("[DB] Error! No DBINFO");
-            process.exit(1);
+            process.exit(3);
             return;
         }
         let count = 0;

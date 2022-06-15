@@ -10,7 +10,7 @@ class Database {
         const dbInfo = db_info_service_1.dbInfoService.getDBInfo(db_info_service_1.DBType.MAIN_DB);
         if (!dbInfo) {
             logger_1.logger.error("[DB] Error! No DBINFO");
-            process.exit(1);
+            process.exit(4);
             return;
         }
         let success = false;
@@ -37,7 +37,7 @@ class Database {
             console.log(dbConfig);
             success = true;
             logger_1.logger.error("[DB] Error! ", error);
-            process.exit(1);
+            process.exit(5);
             return;
         });
         require('deasync').loopWhile(() => {

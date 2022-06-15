@@ -29,10 +29,12 @@ class DBInfoService {
                 isGame: true
             })
         };
+        console.log(option);
         try {
             const response = JSON.parse(await request(option));
             if (response.error_code == 0) {
                 for (const info of response.result) {
+                    console.log(info);
                     this._dbInfoMap.set(info.type, info);
                 }
             }

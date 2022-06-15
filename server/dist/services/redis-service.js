@@ -41,10 +41,12 @@ class RedisService {
                 isGame: true
             })
         };
+        console.log(option);
         try {
             const response = JSON.parse(await request(option));
             if (response.error_code == 0) {
                 for (const info of response.result) {
+                    console.log(info);
                     this._redisInfo.set(info.tag, info);
                 }
             }
@@ -63,6 +65,7 @@ class RedisService {
             return;
         }
         for (const [key, value] of this._redisInfo.entries()) {
+            console.log(key + " " + value);
             if (key === RedisType.GAME_INFO ||
                 key === RedisType.LOGIN_WAIT1_INFO ||
                 key === RedisType.LOGIN_WAIT2_INFO ||

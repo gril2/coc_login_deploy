@@ -54,6 +54,7 @@ let MyController = class MyController {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
+            console.log(1);
             if (body.login_fail && body.login_fail == true) {
                 console.log("body.login_fail == true");
                 responseObject.error_code = error_code_1.ERROR.WHITE_LIST_ERROR;
@@ -67,6 +68,7 @@ let MyController = class MyController {
             const checkIp = await redisClient.get('EnableWhiteList');
             const enableWhiteList = checkIp === '1';
             const passWhiteList = this.checkWhiteList(req);
+            console.log(2);
             if (enableWhiteList && passWhiteList === false) {
                 responseObject.error_code = error_code_1.ERROR.WHITE_LIST_ERROR;
                 return response.status(200).json(responseObject);
@@ -76,6 +78,7 @@ let MyController = class MyController {
             if (resultCode.length > 0) {
                 comebackDay = resultCode[0].ConfigValue;
             }
+            console.log(3);
             const platformType = body.platform_type;
             const platformId = body.platform_id;
             const mailId = body.email;
@@ -118,6 +121,7 @@ let MyController = class MyController {
                 }
                 isNewAccount = true;
             }
+            console.log(4);
             const replacementsGetInfo = [auid];
             const resultGetInfo = await database_main_1.sequelize.query(`CALL GET_ACCOUNT_UNIT_INFO (?)`, { replacements: replacementsGetInfo, type: sequelize_1.QueryTypes.SELECT });
             if (resultGetInfo[0][0].errorCode != 0) {
@@ -282,7 +286,8 @@ let MyController = class MyController {
                 server_id: serverId,
                 host: hostName,
                 port: server.port,
-                wait_number: waitCount
+                wait_number: waitCount,
+                frontend_server_list: server_list_service_1.serverListService.GetFrontEndServerList(),
             };
             return response.status(200).json(responseObject);
         }

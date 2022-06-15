@@ -18,10 +18,28 @@ class ServerListService {
             createCharacterAvailable: serverInfo.createCharacterAvailable,
             host: serverInfo.host,
             port: serverInfo.port,
-            disableFromList: false,
+            server_flavor: serverInfo.server_flavor,
+            disableFromList: serverInfo.disableFromList,
             updateDate: new Date(),
         };
         this.serverList.set(server.serverId, server);
+    }
+    GetFrontEndServerList() {
+        const curDate = new Date();
+        const retServerList = [];
+        for (const [key, serverInfo] of this.serverList.entries()) {
+            if (serverInfo.server_flavor != "coc_frontend") {
+                continue;
+            }
+            serverInfo.outDate = (curDate.getTime() - serverInfo.updateDate.getTime()) > 1500 ? true : false;
+            if (!serverInfo.outDate) {
+                retServerList.push({
+                    host: serverInfo.host,
+                    port: serverInfo.port,
+                });
+            }
+        }
+        return retServerList;
     }
     GetPublicServerList() {
         const curDate = new Date();

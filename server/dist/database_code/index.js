@@ -37,7 +37,7 @@ class Database {
             console.log(dbConfig);
             success = true;
             logger_1.logger.error("[DB] Error! ", error);
-            process.exit(1);
+            process.exit(2);
             return;
         });
         require('deasync').loopWhile(() => {
