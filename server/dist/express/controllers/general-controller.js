@@ -185,6 +185,7 @@ let MyController = class MyController {
             const certKey = body.certification_key;
             console.log("/serverlist checkCert");
             if (await this.checkCert(accountGSN, certKey) === false) {
+                console.log("/serverlist return checkCert");
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
