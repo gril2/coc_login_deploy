@@ -183,17 +183,13 @@ let MyController = class MyController {
             }
             const accountGSN = body.account_gsn;
             const certKey = body.certification_key;
-            console.log("/serverlist checkCert");
             if (await this.checkCert(accountGSN, certKey) === false) {
-                console.log("/serverlist return checkCert");
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
-            console.log("/serverlist GetPublicServerList");
             responseObject.result = {
                 server_list: server_list_service_1.serverListService.GetPublicServerList()
             };
-            console.log("/serverlist responseObject");
             return response.status(200).json(responseObject);
         }
         catch (error) {
