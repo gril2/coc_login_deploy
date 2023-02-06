@@ -4,6 +4,7 @@ exports.serverListService = void 0;
 class ServerListService {
     constructor() {
         this.serverList = new Map();
+        this.FEServerList = new Array();
         this.outDateTime = 15000;
         this.maxServerId = 511;
         this.outDateServerId = 31;
@@ -11,18 +12,36 @@ class ServerListService {
     close() {
     }
     SetServer(serverInfo) {
-        const server = {
-            serverId: serverInfo.serverId,
-            maxUserCount: serverInfo.maxUserCount,
-            currentUserCount: serverInfo.currentUserCount,
-            createCharacterAvailable: serverInfo.createCharacterAvailable,
-            host: serverInfo.host,
-            port: serverInfo.port,
-            server_flavor: serverInfo.server_flavor,
-            disableFromList: serverInfo.disableFromList,
-            updateDate: new Date(),
-        };
-        this.serverList.set(server.serverId, server);
+        if (serverInfo.server_flavor == "coc_contents" || serverInfo.server_flavor == "coc_development") {
+            for (const serverId of serverInfo.server_id_array) {
+                const server = {
+                    serverId: serverId,
+                    server_group_id: serverInfo.server_group_id,
+                    maxUserCount: serverInfo.maxUserCount,
+                    currentUserCount: serverInfo.currentUserCount,
+                    createCharacterAvailable: serverInfo.createCharacterAvailable,
+                    host: serverInfo.host,
+                    port: serverInfo.port,
+                    server_flavor: serverInfo.server_flavor,
+                    disableFromList: serverInfo.disableFromList,
+                    updateDate: new Date(),
+                };
+                this.serverList.set(server.serverId, server);
+            }
+        }
+        else if (serverInfo.server_flavor == "coc_frontend") {
+            const server = {
+                maxUserCount: serverInfo.maxUserCount,
+                currentUserCount: serverInfo.currentUserCount,
+                createCharacterAvailable: serverInfo.createCharacterAvailable,
+                host: serverInfo.host,
+                port: serverInfo.port,
+                server_flavor: serverInfo.server_flavor,
+                disableFromList: serverInfo.disableFromList,
+                updateDate: new Date(),
+            };
+            this.FEServerList.push(server);
+        }
     }
     GetFrontEndServerList() {
         const curDate = new Date();
@@ -31,6 +50,17 @@ class ServerListService {
             if (serverInfo.server_flavor != "coc_frontend" && serverInfo.server_flavor != "coc_development") {
                 continue;
             }
+            serverInfo.outDate = (curDate.getTime() - serverInfo.updateDate.getTime()) > 1500 ? true : false;
+            if (!serverInfo.outDate) {
+                retServerList.push({
+                    host: serverInfo.host,
+                    port: serverInfo.port,
+                    server_flavor: serverInfo.server_flavor,
+                    serverId: serverInfo.serverId
+                });
+            }
+        }
+        for (const serverInfo of this.FEServerList) {
             serverInfo.outDate = (curDate.getTime() - serverInfo.updateDate.getTime()) > 1500 ? true : false;
             if (!serverInfo.outDate) {
                 retServerList.push({

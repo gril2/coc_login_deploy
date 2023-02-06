@@ -18,7 +18,6 @@ const sequelize_1 = require("sequelize");
 const error_code_1 = require("../../error-code");
 const logger_1 = require("../../logger");
 const database_main_1 = require("../../database_main");
-const database_code_1 = require("../../database_code");
 const uuid_1 = require("uuid");
 const server_list_service_1 = require("../../services/server-list-service");
 const redis_service_1 = require("../../services/redis-service");
@@ -74,18 +73,14 @@ let MyController = class MyController {
                 return response.status(200).json(responseObject);
             }
             let comebackDay = 28;
-            const resultCode = await database_code_1.sequelize.query(`SELECT * FROM __t_Config WHERE tid=1005`, { type: sequelize_1.QueryTypes.SELECT });
-            if (resultCode.length > 0) {
-                comebackDay = resultCode[0].ConfigValue;
-            }
             console.log(3);
             const platformType = body.platform_type;
             const platformId = body.platform_id;
             const mailId = body.email;
             const marketType = body.market_type;
             const uuid = uuid_1.v4();
-            const replacementsLogin = [platformType, platformId, uuid, mailId, marketType, comebackDay, date_util_1.getDateString(new Date())];
-            const resultLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
+            const replacementsLogin = [platformType, platformId, uuid, mailId, comebackDay, date_util_1.getDateString(new Date())];
+            const resultLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
             if (resultLogin[0][0].errorCode) {
                 responseObject.error_code = resultLogin[0][0].errorCode;
                 if (resultLogin[0][0].block_id && resultLogin[0][0].block_id > 0) {
@@ -102,13 +97,13 @@ let MyController = class MyController {
             let isNewAccount = false;
             if (auid === 0) {
                 const countryCode = body.country_code;
-                const replacementsJoin = [platformType, platformId, mailId, countryCode, marketType, date_util_1.getDateString(new Date())];
-                const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?,?,?)`, { replacements: replacementsJoin, type: sequelize_1.QueryTypes.SELECT });
+                const replacementsJoin = [platformType, platformId, 0, mailId, countryCode, marketType, date_util_1.getDateString(new Date())];
+                const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?,?,?,?)`, { replacements: replacementsJoin, type: sequelize_1.QueryTypes.SELECT });
                 if (resultJoin[0][0].errorCode != 0) {
                     responseObject.error_code = resultJoin[0][0].errorCode;
                     return response.status(200).json(responseObject);
                 }
-                const resultReLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
+                const resultReLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
                 if (resultReLogin[0][0].errorCode != 0) {
                     responseObject.error_code = resultReLogin[0][0].errorCode;
                     return response.status(200).json(responseObject);
@@ -249,19 +244,20 @@ let MyController = class MyController {
                 responseObject.error_code = error_code_1.ERROR.ERROR_3499;
                 return response.status(200).json(responseObject);
             }
+            const server_group_id = server.server_group_id;
             let waitCount = -1;
-            if (await redis_service_1.redisService.existKeyInGameAccept(serverId, auid) > 0) {
-                if (redis_service_1.redisService.addToGameAccept(serverId, auid)) {
-                    if (redis_service_1.redisService.addExpireTimeToGameAccept(serverId, auid)) {
+            if (await redis_service_1.redisService.existKeyInGameAccept(server_group_id, auid) > 0) {
+                if (redis_service_1.redisService.addToGameAccept(server_group_id, auid)) {
+                    if (redis_service_1.redisService.addExpireTimeToGameAccept(server_group_id, auid)) {
                         waitCount = 0;
                     }
                 }
             }
             else {
-                if (redis_service_1.redisService.addToLoginWait(serverId, auid)) {
-                    if (redis_service_1.redisService.addExpireTimeToLoginWait(serverId, auid)) {
-                        if (await redis_service_1.redisService.addToLoginWaitList(serverId, auid)) {
-                            waitCount = await redis_service_1.redisService.getLoginWaitListRank(serverId, auid);
+                if (redis_service_1.redisService.addToLoginWait(server_group_id, auid)) {
+                    if (redis_service_1.redisService.addExpireTimeToLoginWait(server_group_id, auid)) {
+                        if (await redis_service_1.redisService.addToLoginWaitList(server_group_id, auid)) {
+                            waitCount = await redis_service_1.redisService.getLoginWaitListRank(server_group_id, auid);
                             if (waitCount === 0) {
                                 waitCount = 1;
                             }
