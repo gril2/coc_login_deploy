@@ -94,6 +94,13 @@ class ServerListService {
         }
         return retServerList;
     }
+    getServerListAll() {
+        const retServerList = [];
+        for (const [_, value] of this.serverList.entries()) {
+            retServerList.push(value);
+        }
+        return retServerList;
+    }
     GetServerEndpoint(serverId) {
         if (this.serverList.has(serverId)) {
             return this.serverList.get(serverId);

@@ -193,6 +193,20 @@ let MyController = class MyController {
             return response.status(500).json(responseObject);
         }
     }
+    async postServerListAll(response) {
+        const responseObject = getResponseObject();
+        try {
+            responseObject.result = {
+                server_list: server_list_service_1.serverListService.getServerListAll()
+            };
+            return response.status(200).json(responseObject);
+        }
+        catch (error) {
+            logger_1.logger.error('[serverlist/all] ' + error.message);
+            responseObject.error_code = error_code_1.ERROR.DB_ERROR;
+            return response.status(500).json(responseObject);
+        }
+    }
     async LoginGameserverController(body, req, response) {
         const responseObject = getResponseObject();
         try {
@@ -433,6 +447,13 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "postServerList", null);
+__decorate([
+    routing_controllers_1.Get('/serverlist'),
+    __param(0, routing_controllers_1.Res()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], MyController.prototype, "postServerListAll", null);
 __decorate([
     routing_controllers_1.Post('/login/gameserver'),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Req()), __param(2, routing_controllers_1.Res()),
