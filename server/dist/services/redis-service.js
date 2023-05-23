@@ -98,9 +98,11 @@ class RedisService {
         return this._clients.get(type);
     }
     async existKeyInGameAccept(channelId, gsn) {
+        console.log('existKeyInGameAccept ' + channelId + " " + gsn);
         const client = this._clients.get(RedisType.GAME_ACCEPT1_INFO);
         if (client) {
             const key = `gameaccept:${channelId}:${gsn}`;
+            console.log(key);
             return await client.existsAsync(key);
         }
         return false;
@@ -110,6 +112,8 @@ class RedisService {
         if (client) {
             const key = `gameaccept:${channelId}:${gsn}`;
             const member = `${gsn}`;
+            console.log(key);
+            console.log(member);
             client.getRedis().sadd(key, member);
             return true;
         }
