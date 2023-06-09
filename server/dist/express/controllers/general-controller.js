@@ -250,7 +250,7 @@ let MyController = class MyController {
                 return response.status(200).json(responseObject);
             }
             if (await this.checkCert(auid, certKey) === false) {
-                responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
+                responseObject.error_code = error_code_1.ERROR.CERT_KEY_ERROR;
                 return response.status(200).json(responseObject);
             }
             const server = server_list_service_1.serverListService.GetServerEndpoint(serverId);
