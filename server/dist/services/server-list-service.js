@@ -38,6 +38,7 @@ class ServerListService {
                 port: serverInfo.port,
                 server_flavor: serverInfo.server_flavor,
                 disableFromList: serverInfo.disableFromList,
+                client_open: serverInfo.client_open,
                 updateDate: new Date(),
             };
             this.FEServerList.push(server);
@@ -62,7 +63,7 @@ class ServerListService {
         }
         for (const serverInfo of this.FEServerList) {
             serverInfo.outDate = (curDate.getTime() - serverInfo.updateDate.getTime()) > 1500 ? true : false;
-            if (!serverInfo.outDate) {
+            if (!serverInfo.outDate && serverInfo.client_open) {
                 retServerList.push({
                     host: serverInfo.host,
                     port: serverInfo.port,
