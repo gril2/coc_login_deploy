@@ -10,7 +10,7 @@ services:
       - app-1:app-1
       - app-2:app-2      
     ports:
-      - 33010:27001
+      - 13100:27001
       # - 23001:23001
     depends_on:
       - app-1
