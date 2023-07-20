@@ -79,8 +79,8 @@ let MyController = class MyController {
             const mailId = body.email;
             const marketType = body.market_type;
             const uuid = uuid_1.v4();
-            const replacementsLogin = [platformType, platformId, uuid, mailId, comebackDay, date_util_1.getDateString(new Date())];
-            const resultLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
+            const replacementsLogin = [platformId, uuid, comebackDay, date_util_1.getDateString(new Date())];
+            const resultLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
             if (resultLogin[0][0].errorCode) {
                 responseObject.error_code = resultLogin[0][0].errorCode;
                 if (resultLogin[0][0].block_id && resultLogin[0][0].block_id > 0) {
@@ -97,13 +97,13 @@ let MyController = class MyController {
             let isNewAccount = false;
             if (auid === 0) {
                 const countryCode = body.country_code;
-                const replacementsJoin = [platformType, platformId, 0, mailId, countryCode, marketType, date_util_1.getDateString(new Date())];
-                const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?,?,?,?)`, { replacements: replacementsJoin, type: sequelize_1.QueryTypes.SELECT });
+                const replacementsJoin = [platformId, 0, countryCode, date_util_1.getDateString(new Date())];
+                const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?)`, { replacements: replacementsJoin, type: sequelize_1.QueryTypes.SELECT });
                 if (resultJoin[0][0].errorCode != 0) {
                     responseObject.error_code = resultJoin[0][0].errorCode;
                     return response.status(200).json(responseObject);
                 }
-                const resultReLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
+                const resultReLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
                 if (resultReLogin[0][0].errorCode != 0) {
                     responseObject.error_code = resultReLogin[0][0].errorCode;
                     return response.status(200).json(responseObject);
