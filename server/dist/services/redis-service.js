@@ -66,7 +66,8 @@ class RedisService {
         }
         for (const [key, value] of this._redisInfo.entries()) {
             console.log(key + " " + value);
-            if (key === RedisType.GAME_INFO ||
+            if (key === RedisType.GSN_INFO ||
+                key === RedisType.GAME_INFO ||
                 key === RedisType.LOGIN_WAIT1_INFO ||
                 key === RedisType.LOGIN_WAIT2_INFO ||
                 key === RedisType.GAME_ACCEPT1_INFO ||
@@ -197,6 +198,7 @@ class RedisClient {
         this._hgetallAsync = null;
         this._existsAsync = null;
         this._zrankAsync = null;
+        this._incrAsync = null;
     }
     connect(info) {
         this._connectInfo = info;
@@ -215,6 +217,7 @@ class RedisClient {
         this._hgetallAsync = util_1.promisify(this._client.hgetall).bind(this._client);
         this._existsAsync = util_1.promisify(this._client.exists).bind(this._client);
         this._zrankAsync = util_1.promisify(this._client.zrank).bind(this._client);
+        this._incrAsync = util_1.promisify(this._client.incr).bind(this._client);
     }
     connectForInner(type, info) {
         this._connectInfo = {
@@ -287,6 +290,9 @@ class RedisClient {
     }
     async zrankAsync(key, member) {
         return await this._zrankAsync(key, member);
+    }
+    async incrAsync(key) {
+        return await this._incrAsync(key);
     }
 }
 exports.redisService = new RedisService();

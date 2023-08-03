@@ -15,35 +15,61 @@ var DBType;
     DBType[DBType["CASTLE_DB"] = 6] = "CASTLE_DB";
     DBType[DBType["TOOL_DB"] = 7] = "TOOL_DB";
     DBType[DBType["CODE_DB"] = 8] = "CODE_DB";
+    DBType[DBType["MONGO_DB"] = 9] = "MONGO_DB";
 })(DBType = exports.DBType || (exports.DBType = {}));
 class DBInfoService {
     constructor() {
         this._dbInfoMap = new Map();
     }
     async requestDBInfo() {
-        const option = {
-            headers: { 'content-type': 'application/json', 'api-key': config_1.util_server_api_key },
-            url: `${config_1.getDBConfigUrl()}/db`,
-            method: 'POST',
-            body: JSON.stringify({
-                isGame: true
-            })
-        };
-        console.log(option);
-        try {
-            const response = JSON.parse(await request(option));
-            if (response.error_code == 0) {
-                for (const info of response.result) {
-                    console.log(info);
-                    this._dbInfoMap.set(info.type, info);
+        {
+            const option = {
+                headers: { 'content-type': 'application/json', 'api-key': config_1.util_server_api_key },
+                url: `${config_1.getDBConfigUrl()}/db`,
+                method: 'POST',
+                body: JSON.stringify({
+                    isGame: true
+                })
+            };
+            console.log(option);
+            try {
+                const response = JSON.parse(await request(option));
+                if (response.error_code == 0) {
+                    for (const info of response.result) {
+                        console.log(info);
+                        this._dbInfoMap.set(info.type, info);
+                    }
                 }
             }
-            return true;
+            catch (error) {
+                logger_1.logger.error(error);
+                return false;
+            }
         }
-        catch (error) {
-            logger_1.logger.error(error);
-            return false;
+        {
+            const option = {
+                headers: { 'content-type': 'application/json', 'api-key': config_1.util_server_api_key },
+                url: `${config_1.getDBConfigUrl()}/mongo`,
+                method: 'POST',
+                body: JSON.stringify({
+                    isGame: true
+                })
+            };
+            console.log(option);
+            try {
+                const response = JSON.parse(await request(option));
+                console.log(response);
+                if (response.error_code == 0) {
+                    console.log(response.result);
+                    this._dbInfoMap.set(DBType.MONGO_DB, response.result);
+                }
+            }
+            catch (error) {
+                logger_1.logger.error(error);
+                return false;
+            }
         }
+        return true;
     }
     getDBInfo(type) {
         return this._dbInfoMap.get(type);

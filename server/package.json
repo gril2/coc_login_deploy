@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run build:live",
     "build:live": "nodemon --exec ts-node -- ./src/app.ts",
-    "build": "echo \"build starting\" && del-cli dist/**/*.js && tsc"
+    "build": "echo \"build starting\" && del-cli deploy/server/dist/**/*.js && tsc"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
     "cors": "^2.8.5",
     "deasync": "^0.1.20",
     "express": "^4.17.1",
+    "mongodb": "^3.7.4",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
     "node-redis-scan": "^1.2.1",
