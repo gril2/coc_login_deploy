@@ -27,6 +27,12 @@ const moment = require("moment");
 const DbIdByServerIdMap = new Map();
 const mailTDataMap = new Map();
 const itemTDataMap = new Map();
+const ip_list = [
+    '106.244.26.98',
+    '112.175.60.55',
+    '112.175.60.56',
+    '112.175.73.153',
+];
 let MyController = class MyController {
     constructor() {
     }
@@ -34,6 +40,13 @@ let MyController = class MyController {
         body.fe;
         const responseObject = getResponseObject();
         console.log("HiveItemReq", body);
+        if (process.env.NODE_ENV === 'production') {
+            if (!this.checkWhiteList(req)) {
+                responseObject.code = 50005;
+                responseObject.message = 'white list ip error';
+                return response.status(200).json(responseObject);
+            }
+        }
         try {
             const hash = crypto.createHash('sha1').update("!@#COM2US!@#" + JSON.stringify(body)).digest('hex');
             const requestHash = req.headers['apihash'];
@@ -222,7 +235,19 @@ let MyController = class MyController {
             responseObject.message = error.message;
             return response.status(200).json(responseObject);
         }
+        responseObject.code = 20000;
         return response.status(200).json(responseObject);
+    }
+    checkWhiteList(req) {
+        let accept = false;
+        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        console.log('ip = ' + ip);
+        for (const acceptIp of ip_list) {
+            if (ip.includes(acceptIp)) {
+                return true;
+            }
+        }
+        return false;
     }
     getCurrentDateTimeString() {
         const now = new Date();
