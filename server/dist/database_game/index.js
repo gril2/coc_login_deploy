@@ -19,8 +19,8 @@ class Database {
             let success = false;
             const dbConfig = {
                 database: dbInfo.database[count],
-                username: dbInfo.account.id,
-                password: dbInfo.account.passwd,
+                username: dbInfo.web_account.id,
+                password: dbInfo.web_account.passwd,
                 host: host[1],
                 port: dbInfo.port,
                 dialect: config_1.databaseConfig.dialect,
