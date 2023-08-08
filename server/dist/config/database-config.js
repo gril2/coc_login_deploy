@@ -9,7 +9,7 @@ exports.databaseConfigDev = {
     idlepool: 10000,
     logging: console.log,
     force: false,
-    timezone: "+00:00",
+    timezone: "+09:00",
 };
 exports.databaseConfigProd = {
     dialect: "mysql",
@@ -19,7 +19,7 @@ exports.databaseConfigProd = {
     idlepool: 10000,
     logging: false,
     force: false,
-    timezone: "+00:00",
+    timezone: "+09:00",
 };
 exports.databaseConfigQAMain = {
     dialect: "mysql",
@@ -29,7 +29,7 @@ exports.databaseConfigQAMain = {
     idlepool: 10000,
     logging: false,
     force: false,
-    timezone: "+00:00",
+    timezone: "+09:00",
 };
 exports.databaseConfigQACode = {
     dialect: "mysql",
@@ -39,7 +39,7 @@ exports.databaseConfigQACode = {
     idlepool: 10000,
     logging: false,
     force: false,
-    timezone: "+00:00",
+    timezone: "+09:00",
 };
 exports.databaseConfigLoadRunnerMain = {
     dialect: "mysql",
@@ -49,7 +49,7 @@ exports.databaseConfigLoadRunnerMain = {
     idlepool: 10000,
     logging: false,
     force: false,
-    timezone: "+00:00",
+    timezone: "+09:00",
 };
 exports.databaseConfigLoadRunnerCode = {
     dialect: "mysql",
@@ -59,7 +59,7 @@ exports.databaseConfigLoadRunnerCode = {
     idlepool: 10000,
     logging: false,
     force: false,
-    timezone: "+00:00",
+    timezone: "+09:00",
 };
 exports.databaseConfigCode = {
     dialect: "mysql",
@@ -69,7 +69,7 @@ exports.databaseConfigCode = {
     idlepool: 10000,
     logging: false,
     force: false,
-    timezone: "+00:00",
+    timezone: "+09:00",
 };
 exports.databaseConfigBotMain = {
     dialect: "mysql",
@@ -79,7 +79,7 @@ exports.databaseConfigBotMain = {
     idlepool: 10000,
     logging: false,
     force: false,
-    timezone: "+00:00",
+    timezone: "+09:00",
 };
 exports.databaseConfigOptool = {
     dialect: "mysql",
@@ -89,7 +89,7 @@ exports.databaseConfigOptool = {
     idlepool: 10000,
     logging: console.log,
     force: false,
-    timezone: "+00:00",
+    timezone: "+09:00",
 };
 exports.databaseConfigLoadRunnerOptool = {
     dialect: "mysql",
@@ -99,5 +99,5 @@ exports.databaseConfigLoadRunnerOptool = {
     idlepool: 10000,
     logging: console.log,
     force: false,
-    timezone: "+00:00",
+    timezone: "+09:00",
 };
