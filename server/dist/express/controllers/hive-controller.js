@@ -156,9 +156,9 @@ let MyController = class MyController {
                             }
                             itemTDataMap.set(detail.assetCode, codeRet[0]);
                         }
-                        if (mailContentType == 4 && itemTDataMap.get(detail.assetCode).ItemCategory != 1) {
+                        if (mailContentType == 3 && itemTDataMap.get(detail.assetCode).ItemCategory == 1) {
                             responseObject.code = 50005;
-                            responseObject.message = 'mailContentType == 4 &&  itemTDataMap.get(detail.assetCode).ItemCategory != 1';
+                            responseObject.message = 'mailContentType == 3 &&  itemTDataMap.get(detail.assetCode).ItemCategory == 1';
                             return response.status(200).json(responseObject);
                         }
                         const mailGsn = await redisClient.incrAsync('GsnMail');
