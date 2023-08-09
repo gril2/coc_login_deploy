@@ -141,10 +141,6 @@ let MyController = class MyController {
                     return response.status(200).json(responseObject);
                 }
                 try {
-                    const gameDBTran = await gamesequelize.transaction();
-                    let fullQueryStr = '';
-                    console.log("body.detail.length = " + body.detail.length);
-                    console.log("body.detail = " + body.detail);
                     for (const detail of body.detail) {
                         if (!itemTDataMap.has(detail.assetCode)) {
                             let codQuery = 'SELECT ItemCategory FROM Item_InfoTable where TID = ?;';
@@ -161,64 +157,66 @@ let MyController = class MyController {
                             responseObject.message = 'mailContentType == 3 &&  itemTDataMap.get(detail.assetCode).ItemCategory == 1';
                             return response.status(200).json(responseObject);
                         }
+                    }
+                    console.log("body.detail.length = " + body.detail.length);
+                    console.log("body.detail = " + body.detail);
+                    if (body.detail.length == 1) {
                         const mailGsn = await redisClient.incrAsync('GsnMail');
                         if (!mailGsn) {
                             responseObject.code = 50004;
                             responseObject.message = 'redisClient.incrAsync(GsnMail) Failed.';
                             return response.status(200).json(responseObject);
                         }
-                        const query = 'CALL SET_HIVE_MAIL_SEND_NO_TRANS(?,?,?,?,?,?,?,?,?,?,?,?,?,?);';
-                        const replacementValues = [unitGsn, accountGsn, serverId, mailType, mailGsn, mailId, mailContentType, detail.assetCode, detail.amount, '1970-01-01 09:00:01', 0, nowstr, expirestr, nowstr];
+                        const query = 'CALL SET_HIVE_MAIL_SEND(?,?,?,?,?,?,?,?,?,?,?,?,?,?);';
+                        const replacementValues = [unitGsn, accountGsn, serverId, mailType, mailGsn, mailId, mailContentType, body.detail[0].assetCode, body.detail[0].amount, '1970-01-01 09:00:01', 0, nowstr, expirestr, nowstr];
                         const mailQuery = query.replace(/\?/g, () => {
                             const value = replacementValues.shift();
                             return value !== undefined ? `'${value}'` : '?';
                         });
-                        fullQueryStr += mailQuery;
                         const mailRet = await gamesequelize.query(mailQuery, { type: sequelize_1.QueryTypes.SELECT });
                         console.log(mailRet);
                         if (mailRet[0]['0'].errorCode != 0) {
-                            gameDBTran.rollback();
                             responseObject.code = 50004;
-                            responseObject.message = 'SET_HIVE_MAIL_SEND_NO_TRANS Failed.';
+                            responseObject.message = 'SET_HIVE_MAIL_SEND Failed.';
                             return response.status(200).json(responseObject);
                         }
-                        if (mailType == 0) {
-                            const UnitMailData = {
-                                unit_gsn: mailRet[1]['0'].unit_gsn,
-                                unit_mail_gsn: mailRet[1]['0'].unit_mail_gsn,
-                                mail_id: mailRet[1]['0'].mail_id,
-                                contents_type: mailRet[1]['0'].contents_type,
-                                contents_gsn: mailRet[1]['0'].contents_gsn,
-                                contents_cnt: mailRet[1]['0'].contents_cnt,
-                                contents_expire_dt: mailRet[1]['0'].contents_expire_dt,
-                                sender_gsn: mailRet[1]['0'].sender_gsn,
-                                state_type: mailRet[1]['0'].state_type,
-                                mail_reg_dt: mailRet[1]['0'].mail_reg_dt,
-                                mail_expire_dt: mailRet[1]['0'].mail_expire_dt,
-                                mail_receive_dt: mailRet[1]['0'].mail_receive_dt,
-                                last_upd_dt: mailRet[1]['0'].last_upd_dt,
-                            };
-                            log.UnitMailData.push(UnitMailData);
-                        }
-                        else {
-                            const ServerMailData = {
-                                server_mail_gsn: mailRet[1]['0'].server_mail_gsn,
-                                mail_id: mailRet[1]['0'].mail_id,
-                                contents_item_id: mailRet[1]['0'].contents_item_id,
-                                contents_cnt: mailRet[1]['0'].contents_cnt,
-                                sender_gsn: mailRet[1]['0'].sender_gsn,
-                                state_type: mailRet[1]['0'].state_type,
-                                mail_reg_dt: mailRet[1]['0'].mail_reg_dt,
-                                mail_expire_dt: mailRet[1]['0'].mail_expire_dt,
-                                last_upd_dt: mailRet[1]['0'].last_upd_dt,
-                            };
-                            log.UnitMailData.push(ServerMailData);
-                        }
+                        this.makelog(mailType, mailRet, log);
+                        log.ExecuteSQL = mailQuery;
+                        const db = database_mongo_log_1.mongo_sequelize;
+                        await db.collection('log_daily_unit').insertOne(log);
                     }
-                    gameDBTran.commit();
-                    log.ExecuteSQL = fullQueryStr;
-                    const db = database_mongo_log_1.mongo_sequelize;
-                    await db.collection('log_daily_unit').insertOne(log);
+                    else {
+                        const gameDBTran = await gamesequelize.transaction();
+                        let fullQueryStr = '';
+                        for (const detail of body.detail) {
+                            const mailGsn = await redisClient.incrAsync('GsnMail');
+                            if (!mailGsn) {
+                                responseObject.code = 50004;
+                                responseObject.message = 'redisClient.incrAsync(GsnMail) Failed.';
+                                return response.status(200).json(responseObject);
+                            }
+                            const query = 'CALL SET_HIVE_MAIL_SEND_NO_TRANS(?,?,?,?,?,?,?,?,?,?,?,?,?,?);';
+                            const replacementValues = [unitGsn, accountGsn, serverId, mailType, mailGsn, mailId, mailContentType, detail.assetCode, detail.amount, '1970-01-01 09:00:01', 0, nowstr, expirestr, nowstr];
+                            const mailQuery = query.replace(/\?/g, () => {
+                                const value = replacementValues.shift();
+                                return value !== undefined ? `'${value}'` : '?';
+                            });
+                            fullQueryStr += mailQuery;
+                            const mailRet = await gamesequelize.query(mailQuery, { type: sequelize_1.QueryTypes.SELECT });
+                            console.log(mailRet);
+                            if (mailRet[0]['0'].errorCode != 0) {
+                                gameDBTran.rollback();
+                                responseObject.code = 50004;
+                                responseObject.message = 'SET_HIVE_MAIL_SEND_NO_TRANS Failed.';
+                                return response.status(200).json(responseObject);
+                            }
+                            this.makelog(mailType, mailRet, log);
+                        }
+                        gameDBTran.commit();
+                        log.ExecuteSQL = fullQueryStr;
+                        const db = database_mongo_log_1.mongo_sequelize;
+                        await db.collection('log_daily_unit').insertOne(log);
+                    }
                 }
                 catch (error) {
                     console.log("error", error);
@@ -237,6 +235,40 @@ let MyController = class MyController {
         }
         responseObject.code = 20000;
         return response.status(200).json(responseObject);
+    }
+    makelog(mailType, mailRet, log) {
+        if (mailType == 0) {
+            const UnitMailData = {
+                unit_gsn: mailRet[1]['0'].unit_gsn,
+                unit_mail_gsn: mailRet[1]['0'].unit_mail_gsn,
+                mail_id: mailRet[1]['0'].mail_id,
+                contents_type: mailRet[1]['0'].contents_type,
+                contents_gsn: mailRet[1]['0'].contents_gsn,
+                contents_cnt: mailRet[1]['0'].contents_cnt,
+                contents_expire_dt: mailRet[1]['0'].contents_expire_dt,
+                sender_gsn: mailRet[1]['0'].sender_gsn,
+                state_type: mailRet[1]['0'].state_type,
+                mail_reg_dt: mailRet[1]['0'].mail_reg_dt,
+                mail_expire_dt: mailRet[1]['0'].mail_expire_dt,
+                mail_receive_dt: mailRet[1]['0'].mail_receive_dt,
+                last_upd_dt: mailRet[1]['0'].last_upd_dt,
+            };
+            log.UnitMailData.push(UnitMailData);
+        }
+        else {
+            const ServerMailData = {
+                server_mail_gsn: mailRet[1]['0'].server_mail_gsn,
+                mail_id: mailRet[1]['0'].mail_id,
+                contents_item_id: mailRet[1]['0'].contents_item_id,
+                contents_cnt: mailRet[1]['0'].contents_cnt,
+                sender_gsn: mailRet[1]['0'].sender_gsn,
+                state_type: mailRet[1]['0'].state_type,
+                mail_reg_dt: mailRet[1]['0'].mail_reg_dt,
+                mail_expire_dt: mailRet[1]['0'].mail_expire_dt,
+                last_upd_dt: mailRet[1]['0'].last_upd_dt,
+            };
+            log.UnitMailData.push(ServerMailData);
+        }
     }
     checkWhiteList(req) {
         let accept = false;
