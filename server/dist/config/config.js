@@ -13,7 +13,7 @@ exports.loggerConfig = logging_config_1.loggingConfig;
 exports.redisConfig = process.env.NODE_ENV === 'production' ? redis_config_1.redisConfigProd : (process.env.NODE_ENV === 'aws_loadrunner' ? redis_config_1.redisConfigStress : redis_config_1.redisConfigDev);
 exports.util_server_api_key = 'PjrHQj6pVDXb5s1I4kpXJ/uxUG3a7ORLeH+YT61ZIYs=';
 exports.api_url_dev = 'http://192.168.0.231:13010/config';
-exports.api_url_prod = 'http://13.124.70.168:13010/config';
+exports.api_url_prod = 'http://10.0.1.88:13010/config';
 exports.api_url_bot = 'http://192.168.0.231:13010/config';
 exports.api_url_qa = 'http://192.168.0.151:13010/config';
 exports.getDBConfigUrl = () => {
