@@ -18,13 +18,14 @@ class Database {
             return;
         }
         try {
-            const username = 'coc_game_server';
-            const password = 'Coc&!@gameServer81233';
-            const mongoURL = "mongodb://" + dbInfo.username + ":" + dbInfo.password + "@" + dbInfo.host + ":" + dbInfo.port;
+            const mongoURL = "mongodb://" + dbInfo.username + ":" + dbInfo.password + "@" + dbInfo.host + ":" + dbInfo.port + "/?retryWrites=false";
             console.log(mongoURL);
-            this.mongoClient = new mongodb_1.MongoClient(mongoURL, { useUnifiedTopology: true });
+            const options = {
+                useUnifiedTopology: true
+            };
+            this.mongoClient = new mongodb_1.MongoClient(mongoURL, options);
             let success = false;
-            this.mongoClient.connect();
+            await this.mongoClient.connect();
             success = true;
             this.mongoDb = this.mongoClient.db(dbInfo.db);
             console.log('Connected to MongoDB! dbName : ' + dbInfo.db);
