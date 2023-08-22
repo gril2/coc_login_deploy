@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDBConfigUrl = exports.api_url_qa = exports.api_url_bot = exports.api_url_prod = exports.api_url_dev = exports.util_server_api_key = exports.redisConfig = exports.loggerConfig = exports.databaseCodeConfig = exports.databaseMainConfig = exports.databaseConfig = exports.serverConfig = void 0;
+exports.getDBConfigUrl = exports.api_url_ext = exports.api_url_qa = exports.api_url_bot = exports.api_url_prod = exports.api_url_dev = exports.util_server_api_key = exports.redisConfig = exports.loggerConfig = exports.databaseCodeConfig = exports.databaseMainConfig = exports.databaseConfig = exports.serverConfig = void 0;
 const database_config_1 = require("./database-config");
 const logging_config_1 = require("./logging-config");
 const server_config_1 = require("./server-config");
@@ -16,12 +16,16 @@ exports.api_url_dev = 'http://192.168.0.231:13010/config';
 exports.api_url_prod = 'http://10.0.1.88:13010/config';
 exports.api_url_bot = 'http://192.168.0.231:13010/config';
 exports.api_url_qa = 'http://192.168.0.151:13010/config';
+exports.api_url_ext = 'http://192.168.0.91:13010/config';
 exports.getDBConfigUrl = () => {
     if (process.env.NODE_ENV === 'aws_qa') {
         return exports.api_url_qa;
     }
     else if (process.env.NODE_ENV === 'bot') {
         return exports.api_url_bot;
+    }
+    else if ((process.env.NODE_ENV === 'ext')) {
+        return exports.api_url_ext;
     }
     else {
         if (process.env.NODE_ENV === 'production') {
