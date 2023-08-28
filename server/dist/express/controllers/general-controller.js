@@ -14,10 +14,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MyController = exports.PlatformType = void 0;
 const routing_controllers_1 = require("routing-controllers");
-const sequelize_1 = require("sequelize");
 const error_code_1 = require("../../error-code");
 const logger_1 = require("../../logger");
-const database_main_1 = require("../../database_main");
 const uuid_1 = require("uuid");
 const server_list_service_1 = require("../../services/server-list-service");
 const redis_service_1 = require("../../services/redis-service");
@@ -26,6 +24,7 @@ const block_locale_service_1 = require("../../services/block-locale-service");
 const date_util_1 = require("../../modules/date-util");
 const redisScan = require("node-redis-scan");
 const util_1 = require("util");
+const database_main_mysql_1 = require("../../database_main_mysql");
 var PlatformType;
 (function (PlatformType) {
     PlatformType[PlatformType["KAKAO"] = 1] = "KAKAO";
@@ -80,7 +79,9 @@ let MyController = class MyController {
             const marketType = body.market_type;
             const uuid = uuid_1.v4();
             const replacementsLogin = [platformId, uuid, comebackDay, date_util_1.getDateString(new Date())];
-            const resultLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
+            const sqlCon = await database_main_mysql_1.db.getMysqlconnection();
+            const [resultLogin, fields] = await sqlCon.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?)`, replacementsLogin);
+            sqlCon.release();
             if (resultLogin[0][0].errorCode) {
                 responseObject.error_code = resultLogin[0][0].errorCode;
                 if (resultLogin[0][0].block_id && resultLogin[0][0].block_id > 0) {
@@ -98,12 +99,16 @@ let MyController = class MyController {
             if (auid === 0) {
                 const countryCode = body.country_code;
                 const replacementsJoin = [platformId, 0, countryCode, date_util_1.getDateString(new Date())];
-                const resultJoin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?)`, { replacements: replacementsJoin, type: sequelize_1.QueryTypes.SELECT });
+                const sqlCon = await database_main_mysql_1.db.getMysqlconnection();
+                const [resultJoin, fields2] = await sqlCon.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?)`, replacementsJoin);
+                sqlCon.release();
                 if (resultJoin[0][0].errorCode != 0) {
                     responseObject.error_code = resultJoin[0][0].errorCode;
                     return response.status(200).json(responseObject);
                 }
-                const resultReLogin = await database_main_1.sequelize.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?)`, { replacements: replacementsLogin, type: sequelize_1.QueryTypes.SELECT });
+                const sqlCon2 = await database_main_mysql_1.db.getMysqlconnection();
+                const [resultReLogin, fields] = await sqlCon2.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?)`, replacementsLogin);
+                sqlCon2.release();
                 if (resultReLogin[0][0].errorCode != 0) {
                     responseObject.error_code = resultReLogin[0][0].errorCode;
                     return response.status(200).json(responseObject);
@@ -118,7 +123,9 @@ let MyController = class MyController {
             }
             console.log(4);
             const replacementsGetInfo = [auid];
-            const resultGetInfo = await database_main_1.sequelize.query(`CALL GET_ACCOUNT_UNIT_INFO (?)`, { replacements: replacementsGetInfo, type: sequelize_1.QueryTypes.SELECT });
+            const sqlCon3 = await database_main_mysql_1.db.getMysqlconnection();
+            const [resultGetInfo] = await sqlCon3.query(`CALL GET_ACCOUNT_UNIT_INFO (?)`, replacementsGetInfo);
+            sqlCon3.release();
             if (resultGetInfo[0][0].errorCode != 0) {
                 responseObject.error_code = resultGetInfo[0][0].errorCode;
                 return response.status(200).json(responseObject);
@@ -413,7 +420,9 @@ let MyController = class MyController {
     }
     async checkCert(gsn, cert) {
         const replacementsCert = [gsn, cert];
-        const resultCert = await database_main_1.sequelize.query(`CALL CHECK_CERTIFICATION_KEY (?,?)`, { replacements: replacementsCert, type: sequelize_1.QueryTypes.SELECT });
+        const sqlCon = await database_main_mysql_1.db.getMysqlconnection();
+        const [resultCert, fields] = await sqlCon.query(`CALL CHECK_CERTIFICATION_KEY (?,?)`, replacementsCert);
+        sqlCon.release();
         if (resultCert[0][0].errorCode) {
             return false;
         }

@@ -24,7 +24,7 @@ exports.getDBConfigUrl = () => {
     else if (process.env.NODE_ENV === 'bot') {
         return exports.api_url_bot;
     }
-    else if ((process.env.NODE_ENV === 'ext')) {
+    else if (process.env.NODE_ENV === 'ext') {
         return exports.api_url_ext;
     }
     else {
