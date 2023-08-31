@@ -168,6 +168,7 @@ let MyController = class MyController {
         }
         catch (error) {
             logger_1.logger.error('[login] ' + error.message);
+            console.log(error);
             responseObject.error_code = error_code_1.ERROR.DB_ERROR;
             return response.status(500).json(responseObject);
         }
