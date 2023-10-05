@@ -25,7 +25,7 @@ class DBInfoService {
         {
             const option = {
                 headers: { 'content-type': 'application/json', 'api-key': config_1.util_server_api_key },
-                url: `${config_1.getDBConfigUrl()}/db`,
+                url: `${(0, config_1.getDBConfigUrl)()}/db`,
                 method: 'POST',
                 body: JSON.stringify({
                     isGame: true
@@ -47,7 +47,7 @@ class DBInfoService {
         {
             const option = {
                 headers: { 'content-type': 'application/json', 'api-key': config_1.util_server_api_key },
-                url: `${config_1.getDBConfigUrl()}/mongo`,
+                url: `${(0, config_1.getDBConfigUrl)()}/mongo`,
                 method: 'POST',
                 body: JSON.stringify({
                     isGame: true
