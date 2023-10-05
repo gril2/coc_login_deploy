@@ -13,7 +13,7 @@ class Server {
     constructor() {
     }
     start() {
-        (0, routing_controllers_1.useExpressServer)(express_1.App.getApp(), {
+        routing_controllers_1.useExpressServer(express_1.App.getApp(), {
             controllers: [__dirname + "/express/controllers/*{.js,.ts}"]
         });
         if (config_1.serverConfig.useExpress) {

@@ -29,11 +29,27 @@ class Database {
             success = true;
             this.mongoDb = this.mongoClient.db(dbInfo.db);
             console.log('Connected to MongoDB! dbName : ' + dbInfo.db);
+            const log = {
+                LogTime: '2020-12-01 00:00:00',
+                LogDate: '2020-12-01',
+                ServerId: 1,
+                ServerGroupId: 1,
+                UnitGsn: 1,
+                LogType: 176,
+                TransactionId: 321312,
+                ExecuteSQL: "SET_MAIL_SEND_NO_TRANS",
+                UnitMailData: [],
+                AccountMailData: [],
+            };
+            await this.mongoDb.collection('log_daily_unit').insertOne(log);
         }
         catch (error) {
             logger_1.logger.error("[DB] Error! ", error);
             console.log('Connected to MongoDB!', error);
         }
+    }
+    async insertlog(log) {
+        await this.mongoDb.collection('log_daily_unit').insertOne(log);
     }
     getMongoDb() {
         return this.mongoDb;

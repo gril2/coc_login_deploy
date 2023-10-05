@@ -77,8 +77,8 @@ let MyController = class MyController {
             const platformId = body.platform_id;
             const mailId = body.email;
             const marketType = body.market_type;
-            const uuid = (0, uuid_1.v4)();
-            const replacementsLogin = [platformId, uuid, comebackDay, (0, date_util_1.getDateString)(new Date())];
+            const uuid = uuid_1.v4();
+            const replacementsLogin = [platformId, uuid, comebackDay, date_util_1.getDateString(new Date())];
             const sqlCon = await database_main_mysql_1.db.getMysqlconnection();
             const [resultLogin, fields] = await sqlCon.query(`CALL SET_ACCOUNT_LOGIN (?,?,?,?)`, replacementsLogin);
             sqlCon.release();
@@ -98,7 +98,7 @@ let MyController = class MyController {
             let isNewAccount = false;
             if (auid === 0) {
                 const countryCode = body.country_code;
-                const replacementsJoin = [platformId, 0, countryCode, (0, date_util_1.getDateString)(new Date())];
+                const replacementsJoin = [platformId, 0, countryCode, date_util_1.getDateString(new Date())];
                 const sqlCon = await database_main_mysql_1.db.getMysqlconnection();
                 const [resultJoin, fields2] = await sqlCon.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?)`, replacementsJoin);
                 sqlCon.release();
@@ -168,6 +168,7 @@ let MyController = class MyController {
         }
         catch (error) {
             logger_1.logger.error('[login] ' + error.message);
+            console.log(error);
             responseObject.error_code = error_code_1.ERROR.DB_ERROR;
             return response.status(500).json(responseObject);
         }
@@ -346,7 +347,7 @@ let MyController = class MyController {
             }
             const redis = redis_service_1.redisService.getClient(redis_service_1.RedisType.LOGIN_WAIT1_INFO);
             const scanner = new redisScan(redis.getRedis());
-            const scanAsync = (0, util_1.promisify)(scanner.scan).bind(scanner);
+            const scanAsync = util_1.promisify(scanner.scan).bind(scanner);
             const keyCount = new Map();
             let matchingKeys = await scanAsync('loginwait:*', { count: 100000 });
             for (const key of matchingKeys) {
@@ -443,66 +444,57 @@ let MyController = class MyController {
     }
 };
 __decorate([
-    (0, routing_controllers_1.Post)('/login/account'),
-    __param(0, (0, routing_controllers_1.Body)()),
-    __param(1, (0, routing_controllers_1.Req)()),
-    __param(2, (0, routing_controllers_1.Res)()),
+    routing_controllers_1.Post('/login/account'),
+    __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Req()), __param(2, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "LoginAccountController", null);
 __decorate([
-    (0, routing_controllers_1.Post)('/serverlist'),
-    __param(0, (0, routing_controllers_1.Body)()),
-    __param(1, (0, routing_controllers_1.Res)()),
+    routing_controllers_1.Post('/serverlist'),
+    __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "postServerList", null);
 __decorate([
-    (0, routing_controllers_1.Get)('/serverlist'),
-    __param(0, (0, routing_controllers_1.Res)()),
+    routing_controllers_1.Get('/serverlist'),
+    __param(0, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "postServerListAll", null);
 __decorate([
-    (0, routing_controllers_1.Post)('/login/gameserver'),
-    __param(0, (0, routing_controllers_1.Body)()),
-    __param(1, (0, routing_controllers_1.Req)()),
-    __param(2, (0, routing_controllers_1.Res)()),
+    routing_controllers_1.Post('/login/gameserver'),
+    __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Req()), __param(2, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "LoginGameserverController", null);
 __decorate([
-    (0, routing_controllers_1.Get)('/recommend'),
-    __param(0, (0, routing_controllers_1.Body)()),
-    __param(1, (0, routing_controllers_1.Req)()),
-    __param(2, (0, routing_controllers_1.Res)()),
+    routing_controllers_1.Get('/recommend'),
+    __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Req()), __param(2, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "getRecommended", null);
 __decorate([
-    (0, routing_controllers_1.Post)('/whitelist/enable'),
-    __param(0, (0, routing_controllers_1.Body)()),
-    __param(1, (0, routing_controllers_1.Res)()),
+    routing_controllers_1.Post('/whitelist/enable'),
+    __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "postWhiteListEnable", null);
 __decorate([
-    (0, routing_controllers_1.Post)('/whitelist/channel/enable'),
-    __param(0, (0, routing_controllers_1.Body)()),
-    __param(1, (0, routing_controllers_1.Res)()),
+    routing_controllers_1.Post('/whitelist/channel/enable'),
+    __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "postWhiteListChannelEnable", null);
 MyController = __decorate([
-    (0, routing_controllers_1.JsonController)(),
-    (0, routing_controllers_1.UseBefore)(auth_middleware_1.authKeyMiddleware),
+    routing_controllers_1.JsonController(),
+    routing_controllers_1.UseBefore(auth_middleware_1.authKeyMiddleware),
     __metadata("design:paramtypes", [])
 ], MyController);
 exports.MyController = MyController;

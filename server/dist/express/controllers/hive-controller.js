@@ -181,8 +181,7 @@ let MyController = class MyController {
                         }
                         this.makelog(mailType, mailRet, log);
                         log.ExecuteSQL = mailQuery;
-                        const db = database_mongo_log_1.mongo_sequelize;
-                        await db.collection('log_daily_unit').insertOne(log);
+                        database_mongo_log_1.db.insertlog(log);
                     }
                     else {
                         const gameDBTran = await gamesequelize.transaction();
@@ -213,8 +212,7 @@ let MyController = class MyController {
                         }
                         gameDBTran.commit();
                         log.ExecuteSQL = fullQueryStr;
-                        const db = database_mongo_log_1.mongo_sequelize;
-                        await db.collection('log_daily_unit').insertOne(log);
+                        database_mongo_log_1.db.insertlog(log);
                     }
                 }
                 catch (error) {

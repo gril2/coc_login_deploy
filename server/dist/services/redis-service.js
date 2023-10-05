@@ -25,7 +25,7 @@ var RedisType;
     RedisType[RedisType["INNER_PUBLISHER"] = 100] = "INNER_PUBLISHER";
     RedisType[RedisType["INNER_SUBSCRIBER"] = 101] = "INNER_SUBSCRIBER";
 })(RedisType = exports.RedisType || (exports.RedisType = {}));
-exports.ServerUUID = (0, uuid_1.v4)();
+exports.ServerUUID = uuid_1.v4();
 const EXPIRE_ADD_SECONDS = 60;
 class RedisService {
     constructor() {
@@ -35,7 +35,7 @@ class RedisService {
     async requestRedisInfo() {
         const option = {
             headers: { 'content-type': 'application/json', 'api-key': config_1.util_server_api_key },
-            url: `${(0, config_1.getDBConfigUrl)()}/redis`,
+            url: `${config_1.getDBConfigUrl()}/redis`,
             method: 'POST',
             body: JSON.stringify({
                 isGame: true
@@ -213,11 +213,11 @@ class RedisClient {
         this._client.on('connect', this.onConnect.bind(this));
         this._client.on('reconnecting', this.onReconnecting.bind(this));
         this._client.on('error', this.onError.bind(this));
-        this._getAsync = (0, util_1.promisify)(this._client.get).bind(this._client);
-        this._hgetallAsync = (0, util_1.promisify)(this._client.hgetall).bind(this._client);
-        this._existsAsync = (0, util_1.promisify)(this._client.exists).bind(this._client);
-        this._zrankAsync = (0, util_1.promisify)(this._client.zrank).bind(this._client);
-        this._incrAsync = (0, util_1.promisify)(this._client.incr).bind(this._client);
+        this._getAsync = util_1.promisify(this._client.get).bind(this._client);
+        this._hgetallAsync = util_1.promisify(this._client.hgetall).bind(this._client);
+        this._existsAsync = util_1.promisify(this._client.exists).bind(this._client);
+        this._zrankAsync = util_1.promisify(this._client.zrank).bind(this._client);
+        this._incrAsync = util_1.promisify(this._client.incr).bind(this._client);
     }
     connectForInner(type, info) {
         this._connectInfo = {
