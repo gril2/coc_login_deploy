@@ -318,7 +318,7 @@ let MyController = class MyController {
     async getRecommended(body, req, response) {
         const responseObject = getResponseObject();
         try {
-            const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.GAME_INFO);
+            const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.RedisType_Optool);
             if (!redisClient) {
                 responseObject.error_code = error_code_1.ERROR.REDIS_ERROR;
                 return response.status(200).json(responseObject);
