@@ -76,7 +76,8 @@ class RedisService {
                 key === RedisType.LOGIN_WAIT2_INFO ||
                 key === RedisType.GAME_ACCEPT1_INFO ||
                 key === RedisType.GAME_ACCEPT2_INFO ||
-                key === RedisType.TRADE1_INFO) {
+                key === RedisType.TRADE1_INFO ||
+                key === RedisType.RedisType_Optool) {
                 const client = new RedisClient();
                 this._clients.set(key, client);
                 client.connect(value);
