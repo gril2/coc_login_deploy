@@ -38,16 +38,15 @@ var PlatformType;
     PlatformType[PlatformType["ETC"] = 99] = "ETC";
 })(PlatformType = exports.PlatformType || (exports.PlatformType = {}));
 const ip_list = [
-    '106.244.26.98',
+    "106.244.26.98",
 ];
 const certKeyLength = 36;
 let MyController = class MyController {
-    constructor() {
-    }
+    constructor() { }
     async LoginAccountController(body, req, response) {
         const responseObject = getResponseObject();
         try {
-            if (!checkProperty(body, ['platform_id', 'platform_type', 'email', 'market_type', 'country_code'])) {
+            if (!checkProperty(body, ["platform_id", "platform_type", "email", "market_type", "country_code"])) {
                 logger_1.logger.error(`ERROR.NO_BODY_ELEMENT : platform_id`);
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
@@ -58,13 +57,13 @@ let MyController = class MyController {
                 responseObject.error_code = error_code_1.ERROR.WHITE_LIST_ERROR;
                 return response.status(200).json(responseObject);
             }
-            const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.GAME_INFO);
+            const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.RedisType_Optool);
             if (!redisClient) {
                 responseObject.error_code = error_code_1.ERROR.REDIS_ERROR;
                 return response.status(200).json(responseObject);
             }
-            const checkIp = await redisClient.get('EnableWhiteList');
-            const enableWhiteList = checkIp === '1';
+            const checkIp = await redisClient.get("EnableWhiteList");
+            const enableWhiteList = checkIp === "1";
             const passWhiteList = this.checkWhiteList(req);
             console.log(2);
             if (enableWhiteList && passWhiteList === false) {
@@ -89,7 +88,7 @@ let MyController = class MyController {
                         platform_id: platformId,
                         block_id: resultLogin[0][0].block_id,
                         block_expire_dt: resultLogin[0].block_expire_dt,
-                        locale_id: block_locale_service_1.blockLocaleService.getLocaleId(resultLogin[0][0].block_id)
+                        locale_id: block_locale_service_1.blockLocaleService.getLocaleId(resultLogin[0][0].block_id),
                     };
                 }
                 return response.status(200).json(responseObject);
@@ -142,7 +141,7 @@ let MyController = class MyController {
                 }
             }
             const newServerList = [];
-            const servers = await redisClient.hgetallAsync('NewServerList');
+            const servers = await redisClient.hgetallAsync("NewServerList");
             if (servers) {
                 for (let i = 1; i <= 20; i++) {
                     if (servers[`${i}`]) {
@@ -158,16 +157,16 @@ let MyController = class MyController {
                 account_char_list: charInfos,
                 server_list: server_list_service_1.serverListService.GetPublicServerList(),
                 is_new_account: isNewAccount,
-                new_server_list: newServerList
+                new_server_list: newServerList,
             };
             const client = redis_service_1.redisService.getClient(redis_service_1.RedisType.TRADE1_INFO);
-            client.getRedis().publish('notify_login', JSON.stringify({
-                auid: auid
+            client.getRedis().publish("notify_login", JSON.stringify({
+                auid: auid,
             }));
             return response.status(200).json(responseObject);
         }
         catch (error) {
-            logger_1.logger.error('[login] ' + error.message);
+            logger_1.logger.error("[login] " + error.message);
             console.log(error);
             responseObject.error_code = error_code_1.ERROR.DB_ERROR;
             return response.status(500).json(responseObject);
@@ -176,7 +175,7 @@ let MyController = class MyController {
     async postServerList(body, response) {
         const responseObject = getResponseObject();
         try {
-            if (!checkProperty(body, ['account_gsn', 'certification_key'])) {
+            if (!checkProperty(body, ["account_gsn", "certification_key"])) {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
@@ -186,17 +185,17 @@ let MyController = class MyController {
             }
             const accountGSN = body.account_gsn;
             const certKey = body.certification_key;
-            if (await this.checkCert(accountGSN, certKey) === false) {
+            if ((await this.checkCert(accountGSN, certKey)) === false) {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
             responseObject.result = {
-                server_list: server_list_service_1.serverListService.GetPublicServerList()
+                server_list: server_list_service_1.serverListService.GetPublicServerList(),
             };
             return response.status(200).json(responseObject);
         }
         catch (error) {
-            logger_1.logger.error('[serverlist] ' + error.message);
+            logger_1.logger.error("[serverlist] " + error.message);
             responseObject.error_code = error_code_1.ERROR.DB_ERROR;
             return response.status(500).json(responseObject);
         }
@@ -205,12 +204,12 @@ let MyController = class MyController {
         const responseObject = getResponseObject();
         try {
             responseObject.result = {
-                server_list: server_list_service_1.serverListService.getServerListAll()
+                server_list: server_list_service_1.serverListService.getServerListAll(),
             };
             return response.status(200).json(responseObject);
         }
         catch (error) {
-            logger_1.logger.error('[serverlist/all] ' + error.message);
+            logger_1.logger.error("[serverlist/all] " + error.message);
             responseObject.error_code = error_code_1.ERROR.DB_ERROR;
             return response.status(500).json(responseObject);
         }
@@ -218,7 +217,7 @@ let MyController = class MyController {
     async LoginGameserverController(body, req, response) {
         const responseObject = getResponseObject();
         try {
-            const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.GAME_INFO);
+            const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.RedisType_Optool);
             if (!redisClient) {
                 responseObject.error_code = error_code_1.ERROR.REDIS_ERROR;
                 return response.status(200).json(responseObject);
@@ -228,10 +227,11 @@ let MyController = class MyController {
                 responseObject.error_code = error_code_1.ERROR.WHITE_LIST_ERROR;
                 return response.status(200).json(responseObject);
             }
-            const checkIp = await redisClient.get('EnableWhiteList');
-            const checkChannelList = await redisClient.hgetallAsync('EnableWhiteListChannel');
-            const enableWhiteList = checkIp === '1';
-            const enableChannelWhiteList = checkChannelList ? checkChannelList[`${body.channel_id}`] === '1' : false;
+            console.log("body : ", body);
+            const checkIp = await redisClient.get("EnableWhiteList");
+            const checkChannelList = await redisClient.hgetallAsync("EnableWhiteListServer");
+            const enableWhiteList = checkIp === "1";
+            const enableChannelWhiteList = checkChannelList ? checkChannelList[`${body.server_id}`] === "1" : false;
             const passWhiteList = this.checkWhiteList(req);
             let passUser = false;
             if (passWhiteList) {
@@ -246,7 +246,7 @@ let MyController = class MyController {
                 responseObject.error_code = error_code_1.ERROR.WHITE_LIST_ERROR;
                 return response.status(200).json(responseObject);
             }
-            if (!checkProperty(body, ['server_id', 'auid', 'cert_key'])) {
+            if (!checkProperty(body, ["server_id", "auid", "cert_key"])) {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
@@ -257,7 +257,7 @@ let MyController = class MyController {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
-            if (await this.checkCert(auid, certKey) === false) {
+            if ((await this.checkCert(auid, certKey)) === false) {
                 responseObject.error_code = error_code_1.ERROR.CERT_KEY_ERROR;
                 return response.status(200).json(responseObject);
             }
@@ -268,7 +268,7 @@ let MyController = class MyController {
             }
             const server_group_id = server.server_group_id;
             let waitCount = -1;
-            if (await redis_service_1.redisService.existKeyInGameAccept(server_group_id, auid) > 0) {
+            if ((await redis_service_1.redisService.existKeyInGameAccept(server_group_id, auid)) > 0) {
                 if (await redis_service_1.redisService.addToGameAccept(server_group_id, auid)) {
                     if (await redis_service_1.redisService.addExpireTimeToGameAccept(server_group_id, auid)) {
                         waitCount = 0;
@@ -289,16 +289,16 @@ let MyController = class MyController {
             }
             if (waitCount === 1) {
                 const client = redis_service_1.redisService.getClient(redis_service_1.RedisType.TRADE1_INFO);
-                client.getRedis().publish('notify_login', JSON.stringify({
-                    auid: auid
+                client.getRedis().publish("notify_login", JSON.stringify({
+                    auid: auid,
                 }));
             }
             let hostName = server.host;
-            let ip = req.headers['x-real-ip'] || req.connection.remoteAddress;
-            const includes = ip.includes('127.0.0.1') || ip.includes('192.168.0.');
-            const env = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'aws_qa' && process.env.NODE_ENV !== 'bot';
+            let ip = req.headers["x-real-ip"] || req.connection.remoteAddress;
+            const includes = ip.includes("127.0.0.1") || ip.includes("192.168.0.");
+            const env = process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "aws_qa" && process.env.NODE_ENV !== "bot";
             if (serverId === 1 && includes && env) {
-                hostName = '192.168.0.79';
+                hostName = "192.168.0.79";
             }
             responseObject.result = {
                 server_id: serverId,
@@ -310,7 +310,7 @@ let MyController = class MyController {
             return response.status(200).json(responseObject);
         }
         catch (error) {
-            logger_1.logger.error('[game/login] ' + error.message);
+            logger_1.logger.error("[game/login] " + error.message);
             responseObject.error_code = error_code_1.ERROR.DB_ERROR;
             return response.status(500).json(responseObject);
         }
@@ -327,9 +327,9 @@ let MyController = class MyController {
                 recommended_server_list: [],
                 new_server_list: [],
                 server_list: server_list_service_1.serverListService.GetPublicServerList(),
-                wait_count_list: []
+                wait_count_list: [],
             };
-            let servers = await redisClient.hgetallAsync('RecommendedServerList');
+            let servers = await redisClient.hgetallAsync("RecommendedServerList");
             if (servers) {
                 for (let i = 1; i <= 20; i++) {
                     if (servers[`${i}`]) {
@@ -337,7 +337,7 @@ let MyController = class MyController {
                     }
                 }
             }
-            servers = await redisClient.hgetallAsync('NewServerList');
+            servers = await redisClient.hgetallAsync("NewServerList");
             if (servers) {
                 for (let i = 1; i <= 20; i++) {
                     if (servers[`${i}`]) {
@@ -349,9 +349,9 @@ let MyController = class MyController {
             const scanner = new redisScan(redis.getRedis());
             const scanAsync = util_1.promisify(scanner.scan).bind(scanner);
             const keyCount = new Map();
-            let matchingKeys = await scanAsync('loginwait:*', { count: 100000 });
+            let matchingKeys = await scanAsync("loginwait:*", { count: 100000 });
             for (const key of matchingKeys) {
-                const data = key.split(':');
+                const data = key.split(":");
                 if (data.length > 1) {
                     const channel = data[1];
                     if (keyCount.has(channel)) {
@@ -366,13 +366,13 @@ let MyController = class MyController {
             for (const [key, value] of keyCount.entries()) {
                 responseObject.result.wait_count_list.push({
                     channel_id: Number.parseInt(key),
-                    count: value
+                    count: value,
                 });
             }
             return response.status(200).json(responseObject);
         }
         catch (error) {
-            logger_1.logger.error('[recommended] ' + error.message);
+            logger_1.logger.error("[recommended] " + error.message);
             console.log(error);
             responseObject.error_code = error_code_1.ERROR.DB_ERROR;
             return response.status(500).json(responseObject);
@@ -381,20 +381,20 @@ let MyController = class MyController {
     async postWhiteListEnable(body, response) {
         const responseObject = getResponseObject();
         try {
-            if (!checkProperty(body, ['enable'])) {
+            if (!checkProperty(body, ["enable"])) {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
-            const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.GAME_INFO);
+            const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.RedisType_Optool);
             if (!redisClient) {
                 responseObject.error_code = error_code_1.ERROR.REDIS_ERROR;
                 return response.status(200).json(responseObject);
             }
-            redisClient.getRedis().set('EnableWhiteList', body.enable);
+            redisClient.getRedis().set("EnableWhiteList", body.enable);
             return response.status(200).json(responseObject);
         }
         catch (error) {
-            logger_1.logger.error('[serverlist] ' + error.message);
+            logger_1.logger.error("[serverlist] " + error.message);
             responseObject.error_code = error_code_1.ERROR.DB_ERROR;
             return response.status(500).json(responseObject);
         }
@@ -402,20 +402,21 @@ let MyController = class MyController {
     async postWhiteListChannelEnable(body, response) {
         const responseObject = getResponseObject();
         try {
-            if (!checkProperty(body, ['enable'])) {
+            if (!checkProperty(body, ["enable"])) {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
-            const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.GAME_INFO);
+            console.log("body 222 : ", body);
+            const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.RedisType_Optool);
             if (!redisClient) {
                 responseObject.error_code = error_code_1.ERROR.REDIS_ERROR;
                 return response.status(200).json(responseObject);
             }
-            redisClient.getRedis().hset('EnableWhiteListChannel', body.channel, body.enable);
+            redisClient.getRedis().hset("EnableWhiteListServer", body.channel, body.enable);
             return response.status(200).json(responseObject);
         }
         catch (error) {
-            logger_1.logger.error('[serverlist] ' + error.message);
+            logger_1.logger.error("[serverlist] " + error.message);
             responseObject.error_code = error_code_1.ERROR.DB_ERROR;
             return response.status(500).json(responseObject);
         }
@@ -428,14 +429,14 @@ let MyController = class MyController {
         if (resultCert[0][0].errorCode) {
             return false;
         }
-        return (resultCert[1][0].v_ExistsCheck > 0);
+        return resultCert[1][0].v_ExistsCheck > 0;
     }
     async checkServerMaintenance() {
         return 1;
     }
     checkWhiteList(req) {
         let accept = false;
-        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        let ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
         for (const acceptIp of ip_list) {
             if (ip.includes(acceptIp)) {
                 return true;
@@ -445,49 +446,49 @@ let MyController = class MyController {
     }
 };
 __decorate([
-    routing_controllers_1.Post('/login/account'),
+    routing_controllers_1.Post("/login/account"),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Req()), __param(2, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "LoginAccountController", null);
 __decorate([
-    routing_controllers_1.Post('/serverlist'),
+    routing_controllers_1.Post("/serverlist"),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "postServerList", null);
 __decorate([
-    routing_controllers_1.Get('/serverlist'),
+    routing_controllers_1.Get("/serverlist"),
     __param(0, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "postServerListAll", null);
 __decorate([
-    routing_controllers_1.Post('/login/gameserver'),
+    routing_controllers_1.Post("/login/gameserver"),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Req()), __param(2, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "LoginGameserverController", null);
 __decorate([
-    routing_controllers_1.Get('/recommend'),
+    routing_controllers_1.Get("/recommend"),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Req()), __param(2, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "getRecommended", null);
 __decorate([
-    routing_controllers_1.Post('/whitelist/enable'),
+    routing_controllers_1.Post("/whitelist/enable"),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "postWhiteListEnable", null);
 __decorate([
-    routing_controllers_1.Post('/whitelist/channel/enable'),
+    routing_controllers_1.Post("/whitelist/channel/enable"),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Res()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
@@ -510,6 +511,6 @@ const checkProperty = (targetJson, include) => {
 const getResponseObject = () => {
     return {
         error_code: 0,
-        result: null
+        result: null,
     };
 };
