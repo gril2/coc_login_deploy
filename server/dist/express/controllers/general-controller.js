@@ -227,7 +227,6 @@ let MyController = class MyController {
                 responseObject.error_code = error_code_1.ERROR.WHITE_LIST_ERROR;
                 return response.status(200).json(responseObject);
             }
-            console.log("body : ", body);
             const checkIp = await redisClient.get("EnableWhiteList");
             const checkChannelList = await redisClient.hgetallAsync("EnableWhiteListServer");
             const enableWhiteList = checkIp === "1";
@@ -406,7 +405,6 @@ let MyController = class MyController {
                 responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
                 return response.status(200).json(responseObject);
             }
-            console.log("body 222 : ", body);
             const redisClient = redis_service_1.redisService.getClient(redis_service_1.RedisType.RedisType_Optool);
             if (!redisClient) {
                 responseObject.error_code = error_code_1.ERROR.REDIS_ERROR;
