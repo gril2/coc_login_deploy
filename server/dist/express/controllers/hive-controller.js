@@ -107,10 +107,11 @@ let MyController = class MyController {
                 let mainQuery = 'SELECT db_id FROM server_info where server_id = ?;';
                 const mainRet = await database_main_1.sequelize.query(mainQuery, { replacements: [serverId], type: sequelize_1.QueryTypes.SELECT });
                 if (mainRet.length == 0) {
-                    responseObject.code = 50005;
-                    return response.status(200).json(responseObject);
+                    DbIdByServerIdMap.set(serverId, 1);
                 }
-                DbIdByServerIdMap.set(serverId, mainRet[0].db_id);
+                else {
+                    DbIdByServerIdMap.set(serverId, mainRet[0].db_id);
+                }
             }
             const dbId = DbIdByServerIdMap.get(serverId);
             const gamesequelize = database_game_1.sequelizeMap.get(dbId);
@@ -213,6 +214,24 @@ let MyController = class MyController {
                         gameDBTran.commit();
                         log.ExecuteSQL = fullQueryStr;
                         database_mongo_log_1.db.insertlog(log);
+                    }
+                    const client = redis_service_1.redisService.getClient(redis_service_1.RedisType.RedisType_Optool);
+                    if (client) {
+                        console.log("log.UnitMailData.length", log.UnitMailData.length);
+                        for (const element of log.UnitMailData) {
+                            console.log("element", JSON.stringify({
+                                command: "hive-mail",
+                                auid: accountGsn,
+                                cuid: unitGsn,
+                                maildata: element
+                            }));
+                            client.getRedis().publish('optool-message', JSON.stringify({
+                                command: "hive-mail",
+                                auid: accountGsn,
+                                cuid: unitGsn,
+                                maildata: element
+                            }));
+                        }
                     }
                 }
                 catch (error) {
