@@ -92,15 +92,16 @@ class ServerListService {
                 continue;
             }
             serverInfo.outDate = (curDate.getTime() - serverInfo.updateDate.getTime()) > this.outDateTime ? true : false;
-            if (!(serverInfo.serverId > this.outDateServerId && serverInfo.outDate)) {
-                retServerList[key] = {
+            if (serverInfo && !serverInfo.outDate) {
+                retServerList.push({
                     serverId: serverInfo.serverId,
                     maxUserCount: serverInfo.maxUserCount,
                     currentUserCount: serverInfo.currentUserCount,
                     createCharacterAvailable: serverInfo.createCharacterAvailable,
                     disableFromList: false,
-                    updateDate: new Date(),
-                };
+                    updateDate: serverInfo.updateDate,
+                });
+                console.log('GetPublicServerList ' + serverInfo.serverId);
             }
         }
         return retServerList;
@@ -108,6 +109,7 @@ class ServerListService {
     getServerListAll() {
         const retServerList = [];
         for (const [_, value] of this.serverList.entries()) {
+            console.log('getServerListAll' + value);
             retServerList.push(value);
         }
         return retServerList;
