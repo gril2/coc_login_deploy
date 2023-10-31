@@ -200,16 +200,20 @@ let MyController = class MyController {
             return response.status(500).json(responseObject);
         }
     }
-    async postServerListAll(response) {
+    async optoolServerList(req, response) {
         const responseObject = getResponseObject();
         try {
+            if (!checkProperty(req.query, ["key"]) || req.query.key != 'ntrance') {
+                responseObject.error_code = error_code_1.ERROR.NO_BODY_ELEMENT;
+                return response.status(200).json(responseObject);
+            }
             responseObject.result = {
-                server_list: server_list_service_1.serverListService.getServerListAll(),
+                server_list: server_list_service_1.serverListService.GetServerListAll(),
             };
             return response.status(200).json(responseObject);
         }
         catch (error) {
-            logger_1.logger.error("[serverlist/all] " + error.message);
+            logger_1.logger.error("[/optool/serverlist] " + error.message);
             responseObject.error_code = error_code_1.ERROR.DB_ERROR;
             return response.status(500).json(responseObject);
         }
@@ -458,12 +462,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MyController.prototype, "postServerList", null);
 __decorate([
-    routing_controllers_1.Get("/serverlist"),
-    __param(0, routing_controllers_1.Res()),
+    routing_controllers_1.Get('/optool/serverlist'),
+    routing_controllers_1.Get('/serverlist'),
+    __param(0, routing_controllers_1.Req()), __param(1, routing_controllers_1.Res()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], MyController.prototype, "postServerListAll", null);
+], MyController.prototype, "optoolServerList", null);
 __decorate([
     routing_controllers_1.Post("/login/gameserver"),
     __param(0, routing_controllers_1.Body()), __param(1, routing_controllers_1.Req()), __param(2, routing_controllers_1.Res()),

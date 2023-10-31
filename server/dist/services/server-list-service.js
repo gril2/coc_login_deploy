@@ -106,11 +106,12 @@ class ServerListService {
         }
         return retServerList;
     }
-    getServerListAll() {
+    GetServerListAll() {
         const retServerList = [];
-        for (const [_, value] of this.serverList.entries()) {
-            console.log('getServerListAll' + value);
-            retServerList.push(value);
+        console.log(`GetServerListAll:`);
+        for (const [_, serverInfo] of this.serverList.entries()) {
+            retServerList.push(serverInfo);
+            console.log(`serverInfo:${JSON.stringify(serverInfo)}`);
         }
         return retServerList;
     }
