@@ -9,12 +9,16 @@ services:
     links:
       - app-1:app-1
       - app-2:app-2      
+      - app-3:app-3
+      - app-4:app-4
     ports:
       - 15030:27001
       # - 23001:23001
     depends_on:
       - app-1
       - app-2
+      - app-3
+      - app-4
 
   app-1:
     container_name: login-server-1
@@ -28,6 +32,26 @@ services:
 
   app-2:
     container_name: login-server-2
+    build: ./server
+    environment:
+      - NODE_ENV=production
+      # - TZ=Asia/Seoul
+    volumes: 
+      - /var/log/ntrance/login/prod:/log
+      # - /etc/localtime:/etc/localtime:ro
+
+  app-3:
+    container_name: login-server-3
+    build: ./server
+    environment:
+      - NODE_ENV=production
+      # - TZ=Asia/Seoul
+    volumes: 
+      - /var/log/ntrance/login/prod:/log
+      # - /etc/localtime:/etc/localtime:ro
+
+  app-4:
+    container_name: login-server-4
     build: ./server
     environment:
       - NODE_ENV=production
