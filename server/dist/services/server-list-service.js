@@ -76,7 +76,7 @@ class ServerListService {
         }
         else {
             retServerList.push({
-                host: 'CocFEInternet-dbd693b20eb4e5dd.elb.ap-northeast-2.amazonaws.com',
+                host: 'coc-prd-fe-lb-1633027985.ap-northeast-2.elb.amazonaws.com',
                 port: 15102,
                 server_flavor: "coc_frontend",
                 serverId: 300
