@@ -9,8 +9,9 @@ class Database {
     constructor() {
         const dbInfo = db_info_service_1.dbInfoService.getDBInfo(db_info_service_1.DBType.CODE_DB);
         if (!dbInfo) {
+            console.log(dbInfo);
             logger_1.logger.error("[DB] Error! No DBINFO");
-            process.exit(1);
+            process.exit(1111);
             return;
         }
         let success = false;
