@@ -44,7 +44,7 @@ services:
     container_name: login-server-3
     build: ./server
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=aws_qa
       # - TZ=Asia/Seoul
     volumes: 
       - /var/log/ntrance/login/prod:/log
@@ -54,7 +54,7 @@ services:
     container_name: login-server-4
     build: ./server
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=aws_qa
       # - TZ=Asia/Seoul
     volumes: 
       - /var/log/ntrance/login/prod:/log
