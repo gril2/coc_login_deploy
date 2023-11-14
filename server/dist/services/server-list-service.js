@@ -46,41 +46,33 @@ class ServerListService {
     }
     GetFrontEndServerList() {
         const retServerList = [];
-        if (process.env.NODE_ENV !== 'production') {
-            const curDate = new Date();
-            for (const [key, serverInfo] of this.serverList.entries()) {
-                if (serverInfo.server_flavor != "coc_frontend" && serverInfo.server_flavor != "coc_development") {
-                    continue;
-                }
-                serverInfo.outDate = (curDate.getTime() - serverInfo.updateDate.getTime()) > 1500 ? true : false;
-                if (!serverInfo.outDate) {
-                    retServerList.push({
-                        host: serverInfo.host,
-                        port: serverInfo.port,
-                        server_flavor: serverInfo.server_flavor,
-                        serverId: serverInfo.serverId
-                    });
-                }
+        const curDate = new Date();
+        for (const [key, serverInfo] of this.serverList.entries()) {
+            if (serverInfo.server_flavor != "coc_frontend" && serverInfo.server_flavor != "coc_development") {
+                continue;
             }
-            for (const serverInfo of this.FEServerList) {
-                serverInfo.outDate = (curDate.getTime() - serverInfo.updateDate.getTime()) > 1500 ? true : false;
-                if (!serverInfo.outDate && serverInfo.client_open) {
-                    retServerList.push({
-                        host: serverInfo.host,
-                        port: serverInfo.port,
-                        server_flavor: serverInfo.server_flavor,
-                        serverId: serverInfo.serverId
-                    });
-                }
+            serverInfo.outDate = (curDate.getTime() - serverInfo.updateDate.getTime()) > 1500 ? true : false;
+            if (!serverInfo.outDate) {
+                retServerList.push({
+                    host: serverInfo.host,
+                    port: serverInfo.port,
+                    server_flavor: serverInfo.server_flavor,
+                    serverId: serverInfo.serverId
+                });
             }
         }
-        else {
-            retServerList.push({
-                host: 'coc-prd-fe-lb-2-a97d85ea876c40db.elb.ap-northeast-2.amazonaws.com',
-                port: 15102,
-                server_flavor: "coc_frontend",
-                serverId: 300
-            });
+        for (const serverInfo of this.FEServerList) {
+            serverInfo.outDate = (curDate.getTime() - serverInfo.updateDate.getTime()) > 1500 ? true : false;
+            if (!serverInfo.outDate && serverInfo.client_open) {
+                retServerList.push({
+                    host: serverInfo.host,
+                    port: serverInfo.port,
+                    server_flavor: serverInfo.server_flavor,
+                    serverId: serverInfo.serverId,
+                    maxUserCount: serverInfo.maxUserCount,
+                    currentUserCount: serverInfo.currentUserCount,
+                });
+            }
         }
         return retServerList;
     }

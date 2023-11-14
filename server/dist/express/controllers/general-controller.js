@@ -331,6 +331,7 @@ let MyController = class MyController {
                 new_server_list: [],
                 server_list: server_list_service_1.serverListService.GetPublicServerList(),
                 wait_count_list: [],
+                frontend_server_list: server_list_service_1.serverListService.GetFrontEndServerList(),
             };
             let servers = await redisClient.hgetallAsync("RecommendedServerList");
             if (servers) {
