@@ -50,7 +50,6 @@ class RedisService {
             const response = JSON.parse(await request(option));
             if (response.error_code == 0) {
                 for (const info of response.result) {
-                    console.log(info);
                     this._redisInfo.set(info.tag, info);
                 }
             }

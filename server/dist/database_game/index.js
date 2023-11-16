@@ -30,13 +30,16 @@ class Database {
                 idlepool: config_1.databaseConfig.idlepool,
                 logging: config_1.databaseConfig.logging
             };
+            console.log("[Game DB] ConnectTyr " + dbInfo.host[count][0]);
+            console.log("[Game DB] ConnectTyr " + dbInfo.host[count][1] + ":" + dbInfo.port);
             let db = this.dbConnection(dbConfig);
-            db.sync().then(() => {
+            this.sequelizeMap.set(dbInfo.host[count][0], db);
+            db.authenticate().then(() => {
                 success = true;
-                this.sequelizeMap.set(dbInfo.host[count][0], db);
+                console.log("[DB] Success! " + dbInfo.host[count][0]);
             }).catch((error) => {
                 success = true;
-                logger_1.logger.error("[DB] Error! ", error);
+                logger_1.logger.error("[DB] Error! " + error);
                 logger_1.logger.error(dbConfig);
             });
             require('deasync').loopWhile(() => {

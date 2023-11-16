@@ -116,7 +116,7 @@ let MyController = class MyController {
             const dbId = DbIdByServerIdMap.get(serverId);
             const gamesequelize = database_game_1.sequelizeMap.get(dbId);
             if (!gamesequelize) {
-                console.log("sequelizeMap.get(dbId)", "dbId error");
+                console.log("sequelizeMap.get(dbId)", "dbId error", dbId);
                 responseObject.code = 50005;
                 responseObject.message = 'DbIdByServerIdMap.get(serverId) Failed.';
                 return response.status(200).json(responseObject);

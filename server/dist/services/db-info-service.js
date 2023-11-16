@@ -37,7 +37,6 @@ class DBInfoService {
                 if (response.error_code == 0) {
                     console.log(response.result);
                     for (const info of response.result) {
-                        console.log(info);
                         this._dbInfoMap.set(info.type, info);
                     }
                 }
