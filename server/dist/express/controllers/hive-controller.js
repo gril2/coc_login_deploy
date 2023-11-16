@@ -103,14 +103,14 @@ let MyController = class MyController {
                 console.log("expirestr = " + expirestr);
                 console.log("codeMailInfo.LifeTime = " + mailTData.LifeTime);
             }
-            if (!mailTDataMap.has(serverId)) {
+            if (!DbIdByServerIdMap.has(serverId)) {
                 let mainQuery = 'SELECT db_id FROM server_info where server_id = ?;';
-                const mainRet = await database_main_1.sequelize.query(mainQuery, { replacements: [serverId], type: sequelize_1.QueryTypes.SELECT });
-                if (mainRet.length == 0) {
+                const serverIdRet = await database_main_1.sequelize.query(mainQuery, { replacements: [serverId], type: sequelize_1.QueryTypes.SELECT });
+                if (serverIdRet.length == 0) {
                     DbIdByServerIdMap.set(serverId, 1);
                 }
                 else {
-                    DbIdByServerIdMap.set(serverId, mainRet[0].db_id);
+                    DbIdByServerIdMap.set(serverId, serverIdRet[0].db_id);
                 }
             }
             const dbId = DbIdByServerIdMap.get(serverId);
@@ -118,7 +118,7 @@ let MyController = class MyController {
             if (!gamesequelize) {
                 console.log("sequelizeMap.get(dbId)", "dbId error");
                 responseObject.code = 50005;
-                responseObject.code = 'DbIdByServerIdMap.get(serverId) Failed.';
+                responseObject.message = 'DbIdByServerIdMap.get(serverId) Failed.';
                 return response.status(200).json(responseObject);
             }
             const log = {
