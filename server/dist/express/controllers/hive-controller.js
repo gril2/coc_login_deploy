@@ -157,6 +157,9 @@ let MyController = class MyController {
                             responseObject.message = 'mailContentType == 3 &&  itemTDataMap.get(detail.assetCode).ItemCategory == 1';
                             return response.status(200).json(responseObject);
                         }
+                        if (itemTDataMap.get(detail.assetCode).ItemCategory == 2) {
+                            mailContentType = 3;
+                        }
                     }
                     console.log("body.detail.length = " + body.detail.length);
                     console.log("body.detail = " + body.detail);
