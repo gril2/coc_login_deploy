@@ -40,7 +40,9 @@ var PlatformType;
 const ip_list = [
     "106.244.26.98",
     "10.0.1.127",
-    "10.0.1.213"
+    "10.0.1.213",
+    "54.180.56.180",
+    "43.200.113.8"
 ];
 const certKeyLength = 36;
 let MyController = class MyController {
