@@ -39,6 +39,8 @@ var PlatformType;
 })(PlatformType = exports.PlatformType || (exports.PlatformType = {}));
 const ip_list = [
     "106.244.26.98",
+    "10.0.1.127",
+    "10.0.1.213"
 ];
 const certKeyLength = 36;
 let MyController = class MyController {
