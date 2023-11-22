@@ -42,7 +42,8 @@ const ip_list = [
     "10.0.1.127",
     "10.0.1.213",
     "54.180.56.180",
-    "43.200.113.8"
+    "43.200.113.8",
+    "54.180.187.192"
 ];
 const certKeyLength = 36;
 let MyController = class MyController {
