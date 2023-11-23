@@ -275,8 +275,15 @@ let MyController = class MyController {
                 return response.status(200).json(responseObject);
             }
             const server_group_id = server.server_group_id;
+            const passLoginWait = this.checkWhiteList(req);
+            if (passLoginWait === true) {
+                console.log("passLoginWait = true " + req.connection.remoteAddress);
+            }
+            else {
+                console.log("passLoginWait = false " + req.connection.remoteAddress);
+            }
             let waitCount = -1;
-            if ((await redis_service_1.redisService.existKeyInGameAccept(server_group_id, auid)) > 0) {
+            if ((await redis_service_1.redisService.existKeyInGameAccept(server_group_id, auid)) > 0 || passLoginWait === true) {
                 if (await redis_service_1.redisService.addToGameAccept(server_group_id, auid)) {
                     if (await redis_service_1.redisService.addExpireTimeToGameAccept(server_group_id, auid)) {
                         waitCount = 0;
