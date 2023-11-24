@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.serverListService = void 0;
+const redis_service_1 = require("./redis-service");
 class ServerListService {
     constructor() {
         this.serverList = new Map();
@@ -98,10 +99,17 @@ class ServerListService {
         }
         return retServerList;
     }
-    GetServerListAll() {
+    async GetServerListAll() {
         const retServerList = [];
         console.log(`GetServerListAll:`);
         for (const [_, serverInfo] of this.serverList.entries()) {
+            try {
+                const waitCount = await redis_service_1.redisService.getLoginWaitCount(serverInfo.server_group_id);
+                serverInfo.waitcount = waitCount;
+            }
+            catch (ex) {
+                console.log(`${ex}`);
+            }
             retServerList.push(serverInfo);
             console.log(`serverInfo:${JSON.stringify(serverInfo)}`);
         }

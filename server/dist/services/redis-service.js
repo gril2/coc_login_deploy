@@ -194,6 +194,14 @@ class RedisService {
         }
         return -1;
     }
+    async getLoginWaitCount(channelId) {
+        const client = this._clients.get(RedisType.LOGIN_WAIT2_INFO);
+        if (client) {
+            const key = `loginwait:${channelId}`;
+            return await client.zcountAsync(key, '-inf', '+inf');
+        }
+        return -1;
+    }
 }
 class RedisClient {
     constructor() {
@@ -203,6 +211,7 @@ class RedisClient {
         this._existsAsync = null;
         this._zrankAsync = null;
         this._incrAsync = null;
+        this._zcountAsync = null;
     }
     connect(info) {
         this._connectInfo = info;
@@ -221,6 +230,7 @@ class RedisClient {
         this._hgetallAsync = util_1.promisify(this._client.hgetall).bind(this._client);
         this._existsAsync = util_1.promisify(this._client.exists).bind(this._client);
         this._zrankAsync = util_1.promisify(this._client.zrank).bind(this._client);
+        this._zcountAsync = util_1.promisify(this._client.zcount).bind(this._client);
         this._incrAsync = util_1.promisify(this._client.incr).bind(this._client);
     }
     connectForInner(type, info) {
@@ -297,6 +307,9 @@ class RedisClient {
     }
     async incrAsync(key) {
         return await this._incrAsync(key);
+    }
+    async zcountAsync(key, min, max) {
+        return await this._zcountAsync(key, min, max);
     }
 }
 exports.redisService = new RedisService();

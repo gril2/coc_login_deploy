@@ -213,7 +213,7 @@ let MyController = class MyController {
                 return response.status(200).json(responseObject);
             }
             responseObject.result = {
-                server_list: server_list_service_1.serverListService.GetServerListAll(),
+                server_list: await server_list_service_1.serverListService.GetServerListAll(),
             };
             return response.status(200).json(responseObject);
         }
