@@ -32,6 +32,9 @@ const ip_list = [
     '112.175.60.55',
     '112.175.60.56',
     '112.175.73.153',
+    '52.79.76.25',
+    '3.37.22.75',
+    '43.202.181.123'
 ];
 let MyController = class MyController {
     constructor() {
