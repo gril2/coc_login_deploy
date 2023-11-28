@@ -148,7 +148,7 @@ let MyController = class MyController {
             const newServerList = [];
             const servers = await redisClient.hgetallAsync("NewServerList");
             if (servers) {
-                for (let i = 1; i <= 20; i++) {
+                for (let i = 1; i <= 40; i++) {
                     if (servers[`${i}`]) {
                         newServerList.push({ channel_id: i, is_new: Number.parseInt(servers[`${i}`]) });
                     }
@@ -347,7 +347,7 @@ let MyController = class MyController {
             };
             let servers = await redisClient.hgetallAsync("RecommendedServerList");
             if (servers) {
-                for (let i = 1; i <= 20; i++) {
+                for (let i = 1; i <= 40; i++) {
                     if (servers[`${i}`]) {
                         responseObject.result.recommended_server_list.push({ channel_id: i, recommended: Number.parseInt(servers[`${i}`]) });
                     }
@@ -355,7 +355,7 @@ let MyController = class MyController {
             }
             servers = await redisClient.hgetallAsync("NewServerList");
             if (servers) {
-                for (let i = 1; i <= 20; i++) {
+                for (let i = 1; i <= 40; i++) {
                     if (servers[`${i}`]) {
                         responseObject.result.new_server_list.push({ channel_id: i, recommended: Number.parseInt(servers[`${i}`]) });
                     }
