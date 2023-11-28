@@ -263,7 +263,7 @@ let MyController = class MyController {
         const signature = hmac.digest('base64');
         const option = {
             headers: { 'Content-Type': 'application/json',
-                'X-Naver-Client-Id': 'e_DcCaPuSpQE3i5viFAZ',
+                'X-Naver-Client-Id': 'wxtboovZrJsn27hMQzQb',
                 'X-Naver-Nonce': nonce,
                 'X-Naver-Timestamp': timestamp,
                 'X-Naver-Signature': signature
@@ -332,7 +332,7 @@ let MyController = class MyController {
         const signature = hmac.digest('base64');
         const option = {
             headers: { 'Content-Type': 'application/json',
-                'X-Naver-Client-Id': 'e_DcCaPuSpQE3i5viFAZ',
+                'X-Naver-Client-Id': 'wxtboovZrJsn27hMQzQb',
                 'X-Naver-Nonce': nonce,
                 'X-Naver-Timestamp': timestamp,
                 'X-Naver-Signature': signature
