@@ -129,9 +129,9 @@ let MyController = class MyController {
             }
             else {
                 let expireDate = new Date('1970-12-31');
-                const resultCode = await database_optool_1.sequelize.query(`SELECT * FROM kakao_certification`, { type: sequelize_1.QueryTypes.SELECT });
+                const resultCode = await database_optool_1.sequelize.query(`SELECT * FROM authentication`, { type: sequelize_1.QueryTypes.SELECT });
                 if (resultCode.length > 0) {
-                    expireDate = resultCode[0].kakao_upd_dt;
+                    expireDate = resultCode[0].last_upd_dt;
                     console.log("expireDate : " + expireDate);
                 }
                 if (authDt < expireDate) {
