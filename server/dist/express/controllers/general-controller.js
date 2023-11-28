@@ -448,11 +448,13 @@ let MyController = class MyController {
             let isNewAccount = false;
             if (auid === 0) {
                 const countryCode = body.country_code;
-                const ci = 'white:third_party_ci:' + body.device_id;
-                const tx_id = 'white:third_party_ci:' + body.device_id;
+                const ci = 'white:third_party_ci:' + platformId;
+                const tx_id = 'white:third_party_ci:' + platformId;
                 const replacementsJoin = [platformId, 0, countryCode, ci, tx_id, date_util_1.getDateString(new Date()), date_util_1.getDateString(new Date())];
+                console.log(replacementsJoin);
                 const sqlCon = await database_main_mysql_1.db.getMysqlconnection();
                 const [resultJoin, fields2] = await sqlCon.query(`CALL SET_ACCOUNT_JOIN (?,?,?,?,?,?,?)`, replacementsJoin);
+                console.log(resultJoin);
                 sqlCon.release();
                 if (resultJoin[0][0].errorCode != 0) {
                     responseObject.error_code = resultJoin[0][0].errorCode;
